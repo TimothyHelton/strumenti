@@ -1,0 +1,100 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Notify Module
+
+Functions for notifying the user are contained in this module.
+
+.. moduleauthor:: Timothy Helton <timothy.j.helton@gmail.com>
+"""
+
+from termcolor import colored
+
+__version__ = '1.0.0'
+
+
+def astrix_line(qty=80):
+    """Return break line of astrix characters.
+
+    :param int qty: number of * characters to be returned
+    :returns: * characters and a line break
+    :rtype: str
+    """
+    return '*' * int(qty) + '\n'
+
+
+def center(statement, fill='=', width=60):
+    """Return statement centered by spaces and fill characters.
+
+    :param str statement: statement to be returned
+    :param str fill: fill character to be used (default: =)
+    :param int width: total width of output string (default: 60)
+    :returns: statement centered on line surrounded by fill characters
+    :rtype: str
+    """
+    stmt_str = statement.center(len(statement) + 2)
+    return '\n' + stmt_str.center(width, fill)
+
+
+def header(statement):
+    """Return a line of asterisks two blank lines and the header statement.
+
+    :param str statement: header statement
+    :returns: formatted header statement
+    :rtype: str
+    """
+    return ''.join((astrix_line(), section_break(), statement, '\n'))
+
+
+def footer(statement):
+    """Return two blank lines the footer statement then a row of asterisks.
+
+    :param str statement: footer statement
+    :returns: formatted footer statement
+    :rtype: str
+    """
+    return ''.join((section_break(), statement, '\n', astrix_line()))
+
+
+def section_break(qty=2):
+    """Return multiple line break characters.
+
+    :param int qty: number of line break characters (default: 2)
+    :returns: multiple new line characters
+    :rtype: str
+    """
+    return '\n' * int(qty)
+
+
+def status(statement, fill='-', width=40):
+    """Return intermediary statements.
+
+    :param str statement: statement to be returned
+    :param str fill: fill character to be used (default: -)
+    :param int width: total width of output string (default: 40)
+    :returns: formatted status statement
+    :rtype: str
+    """
+    return center(statement.title(), fill=fill, width=width)
+
+
+def unittest(actual, expected):
+    """Return actual and expected values for a unittest case.
+
+    :param actual: actual test value
+    :param expected: expected test value
+    :returns: formatted values for unittest results
+    :rtype: str"""
+    return '\nactual: {}\nexpected: {}'.format(actual, expected)
+
+
+def warn(statement, fill='!'):
+    """Return blinking statement formatted in all caps in the color red.
+
+    :param str statement: warning statement
+    :param str fill: fill character to be used (default: !)
+    :returns: formatted warning statement
+    :rtype: str
+    """
+    stmt = colored(statement.upper(), color='red', attrs=['blink'])
+    return center(stmt, fill=fill)
