@@ -11,7 +11,7 @@ import pytest
 import matplotlib.pyplot as plt
 from strumenti import plot
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 
 class TestAxisTitle:
@@ -27,41 +27,33 @@ class TestAxisTitle:
         assert plot.axis_title('test') == 'Test'
 
 
-file_name = 'test_image.png'
-
-
-@pytest.fixture(scope='session')
-def setup_save_plot(request):
-    fig = plt.figure(figsize=(15, 10), facecolor='white')
-    fig.suptitle('Test Figure', fontsize='25', fontweight='bold')
-    ax = plt.subplot2grid((1, 1), (0, 0), rowspan=1, colspan=1)
-    ax.scatter([0, 1, 2, 3], [0, 10, 20, 30], color='black', marker='o')
-
-    def teardown():
-        remove_save_plot()
-    request.addfinalizer(teardown)
-
-
-@pytest.fixture()
-def remove_save_plot():
-    try:
-        os.remove(file_name)
-    except OSError:
-        pass
-
-
-@pytest.mark.usefixtures('setup_save_plot')
 class TestSavePlot:
 
-    def test__save_plot_no_save(self, remove_save_plot):
+    @pytest.fixture(autouse=True)
+    def setup(self, request):
+        self.file_name = 'test_image.png'
+
+        fig = plt.figure(figsize=(15, 10), facecolor='white')
+        fig.suptitle('Test Figure', fontsize='25', fontweight='bold')
+        ax = plt.subplot2grid((1, 1), (0, 0), rowspan=1, colspan=1)
+        ax.scatter([0, 1, 2, 3], [0, 10, 20, 30], color='black', marker='o')
+
+        def teardown():
+            try:
+                os.remove(self.file_name)
+            except OSError:
+                pass
+        request.addfinalizer(teardown)
+
+    def test__save_plot_no_save(self):
         plt.ion()
         plot.save_plot()
-        assert not osp.exists(file_name)
+        assert not osp.exists(self.file_name)
 
     def test__save_plot_default(self):
-        plot.save_plot(file_name)
-        assert osp.exists(file_name)
+        plot.save_plot(self.file_name)
+        assert osp.exists(self.file_name)
 
     def test__save_plot_savefig_argument(self):
-        plot.save_plot(file_name, edgecolor='b', transparent=True)
-        assert osp.exists(file_name)
+        plot.save_plot(self.file_name, edgecolor='b', transparent=True)
+        assert osp.exists(self.file_name)
