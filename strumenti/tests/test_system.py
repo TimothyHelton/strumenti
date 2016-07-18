@@ -15,7 +15,7 @@ import subprocess
 import numpy as np
 from strumenti import system
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 
 @pytest.fixture(scope='session')
@@ -138,6 +138,12 @@ class TestOSLoadRecords:
         output = system.load_records(self.test_no_header_file, cols=(0, 3))
         assert np.all(output['0'] == np.array([1.0, 5.0]))
         assert np.all(output['3'] == np.array([4.0, 8.0]))
+
+    def test__load_records_no_header_include_names(self):
+        output = system.load_records(self.test_no_header_file,
+                                     names=('one', 'two', 'three', 'four'))
+        assert np.all(output['one'] == np.array([1.0, 5.0]))
+        assert np.all(output['four'] == np.array([4.0, 8.0]))
 
 
 class TestPreserveCWD:

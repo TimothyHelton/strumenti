@@ -78,8 +78,8 @@ def load_file(path, all_lines=True, first_n_lines=0):
             return f.read()
 
 
-def load_records(path, header_row=None, skip_rows=0, cols=('all',),
-                 names=None, formats=('f8', )):
+def load_records(path, header_row=None, skip_rows=0, cols=('all',), names=None,
+                 formats=('f8', )):
     """Load ascii file into an array with fields and records.
 
     .. note:: Counting of the file rows begins with zero (first row = 0).
