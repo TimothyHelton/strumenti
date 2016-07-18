@@ -10,7 +10,7 @@ Functions for notifying the user are contained in this module.
 
 from termcolor import colored
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 
 def astrix_line(qty=80):
@@ -76,16 +76,6 @@ def status(statement, fill='-', width=40):
     :rtype: str
     """
     return center(statement.title(), fill=fill, width=width)
-
-
-def unittest(actual, expected):
-    """Return actual and expected values for a unittest case.
-
-    :param actual: actual test value
-    :param expected: expected test value
-    :returns: formatted values for unittest results
-    :rtype: str"""
-    return '\nactual: {}\nexpected: {}'.format(actual, expected)
 
 
 def warn(statement, fill='!'):
