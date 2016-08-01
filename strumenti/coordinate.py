@@ -10,8 +10,6 @@ import sys
 import numpy as np
 from strumenti import notify
 
-__version__ = '1.0.0'
-
 
 def element_dimension(array, values):
     """Return the element dimension for array if dimension matches values.

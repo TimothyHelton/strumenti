@@ -10,8 +10,6 @@ Functions for notifying the user are contained in this module.
 
 from termcolor import colored
 
-__version__ = '1.0.1'
-
 
 def astrix_line(qty=80):
     """Return break line of astrix characters.

@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """notify.py Unit Tests
 
@@ -9,96 +10,87 @@ import pytest
 from strumenti import notify
 
 
-__version__ = '1.0.1'
+@pytest.mark.parametrize('qty, expected', [
+    (5.8, '*****\n'),
+    (10, '**********\n'),
+    ('10', '**********\n'),
+    (80, '*' * 80 + '\n'),
+    ])
+def test__astrix_line(qty, expected):
+    assert notify.astrix_line(qty) == expected
 
 
-class TestAstrixLine:
-
-    def test__float(self):
-        assert notify.astrix_line(5.8) == '*****\n'
-
-    def test__int(self):
-        assert notify.astrix_line(10) == '**********\n'
-
-    def test__str(self):
-        assert notify.astrix_line('10') == '**********\n'
-
-    def test__defaults(self):
-        assert notify.astrix_line() == '*' * 80 + '\n'
+def test__notify_center_empty():
+    with pytest.raises(TypeError):
+        notify.center()
 
 
-class TestNotifyCenter:
-
-    def test__center_empty(self):
-        with pytest.raises(TypeError):
-            notify.center()
-
-    def test__center_one_word(self):
-        assert notify.center('one', width=7) == '\n= one ='
-
-    def test__center_two_word(self):
-        assert notify.center('one two', width=11) == '\n= one two ='
+@pytest.mark.parametrize('stmt, fill, width, expected', [
+    ('one', '=', 7, '\n= one ='),
+    ('one two', '=', 11, '\n= one two =')
+    ])
+def test__center(stmt, fill, width, expected):
+    assert notify.center(stmt, fill, width) == expected
 
 
-class TestNotifyHeader:
-
-    def test__header_empty(self):
-        with pytest.raises(TypeError):
-            notify.header()
-
-    def test__header_notify_module(self):
-        assert notify.header('test') == '*' * 80 + '\n' * 3 + 'test\n'
+def test__header_empty():
+    with pytest.raises(TypeError):
+        notify.header()
 
 
-class TestNotifyFooter:
-
-    def test__footer_empty(self):
-        with pytest.raises(TypeError):
-            notify.footer()
-
-    def test__footer_notify_module(self):
-        assert notify.footer('test') == '\n' * 2 + 'test\n' + '*' * 80 + '\n'
+@pytest.mark.parametrize('stmt, expected', [
+    ('test', '*' * 80 + '\n' * 3 + 'test\n')
+    ])
+def test_header(stmt, expected):
+    assert notify.header(stmt) == expected
 
 
-class TestNotifySectionBreak:
-
-    def test__section_break_defaults(self):
-        assert notify.section_break() == '\n' * 2
-
-    def test__section_break_string(self):
-        assert notify.section_break('10') == '\n' * 10
-
-    def test__section_break_float(self):
-        assert notify.section_break(10.0) == '\n' * 10
-
-    def test__section_break_int(self):
-        assert notify.section_break(10) == '\n' * 10
+def test__footer_empty():
+    with pytest.raises(TypeError):
+        notify.footer()
 
 
-class TestNotifyStatus:
-
-    def test__status_empty(self):
-        with pytest.raises(TypeError):
-            notify.status()
-
-    def test__status_one_word(self):
-        assert notify.status('one', width=7).strip() == '- One -'
-
-    def test__status_two_word(self):
-        assert notify.status('one two', width=11).strip() == '- One Two -'
+@pytest.mark.parametrize('stmt, expected', [
+    ('test', '\n' * 2 + 'test\n' + '*' * 80 + '\n')
+    ])
+def test__footer(stmt, expected):
+    assert notify.footer(stmt) == expected
 
 
-class TestNotifyWarn:
+@pytest.mark.parametrize('qty, expected', [
+    (2, '\n' * 2),
+    ('10', '\n' * 10),
+    (10.0, '\n' * 10),
+    (10, '\n' * 10),
+    ])
+def test__section_break(qty, expected):
+    assert notify.section_break(qty) == expected
 
-    def test__warn_empty(self):
-        with pytest.raises(TypeError):
-            notify.warn()
 
-    def test__warn_one_word(self):
-        assert notify.warn('one').strip() == ('!' * 21 +
-                                              ' \x1b[5m\x1b[31mONE\x1b[0m ' +
-                                              '!' * 21)
+def test__status_empty():
+    with pytest.raises(TypeError):
+        notify.status()
 
-    def test__warn_two_word(self):
-        actual = notify.warn('one two').strip()
-        assert actual == '!' * 19 + ' \x1b[5m\x1b[31mONE TWO\x1b[0m ' + '!' * 19
+
+@pytest.mark.parametrize('stmt, fill, width, expected', [
+    ('one', '-', 7, '- One -'),
+    ('one two', '-', 11, '- One Two -'),
+    ])
+def test__notify(stmt, fill, width, expected):
+    assert notify.status(stmt, fill, width).strip() == expected
+
+
+def test__warn_empty():
+    with pytest.raises(TypeError):
+        notify.warn()
+
+
+# pytest parametrize does not work with termcolor output
+def test__warn_one_word():
+    actual = notify.warn('one').strip()
+    assert actual == ('!' * 21 + ' \x1b[5m\x1b[31mONE\x1b[0m ' + '!' * 21)
+
+
+def test__warn_two_word():
+    actual = notify.warn('one two').strip()
+    assert actual == '!' * 19 + ' \x1b[5m\x1b[31mONE TWO\x1b[0m ' + '!' * 19
