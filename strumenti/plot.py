@@ -11,14 +11,14 @@ Functions for performing tasks related to matplotlib pyplot library.
 import os.path as osp
 import matplotlib.pyplot as plt
 
-__version__ = '1.0.0'
-
 
 def axis_title(title, units=None):
     """Create string for axis title with units italicized.
 
     :param str title: title of axis
     :param str units: units of axis (default: None)
+    :returns: formatted axis title
+    :rtype: str
     """
     title = title.title()
     if units:
