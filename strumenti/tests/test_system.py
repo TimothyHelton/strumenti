@@ -1,6 +1,7 @@
 #! /usr/bin/env python
+# -*- coding: utf-8 -*-
 
-"""notify.py Unit Tests
+"""system.py Unit Tests
 
 ..moduleauthor:: Timothy Helton <timothy.j.helton@gmail.com>
 """
@@ -15,13 +16,12 @@ import subprocess
 import numpy as np
 from strumenti import system
 
-__version__ = '1.0.3'
+
+lines = ['a\tb\tc\td\n', '\n', '1\t2\t3\t4\n', '5\t6\t7\t8\n']
 
 
 @pytest.fixture(scope='session')
 def fixture_get_header():
-    lines = ['a\tb\tc\td\n', '\n', '1\t2\t3\t4\n', '5\t6\t7\t8\n']
-
     with open('test.txt', 'w') as f:
         f.write(''.join(lines))
 
@@ -30,183 +30,143 @@ def fixture_get_header():
 
 
 @pytest.mark.usefixtures('fixture_get_header')
-class TestGetHeader:
-
-    def test__header_row_defaults(self):
-        assert system.get_header('test.txt') == ['a', 'b', 'c', 'd']
-
-    def test__header_row_2_row(self):
-        assert system.get_header('test.txt', 2) == ['1', '2', '3', '4']
-
-    def test__header_row_2_row_string_input(self):
-        assert system.get_header('test.txt', '2') == ['1', '2', '3', '4']
+@pytest.mark.parametrize('name, skip, expected', [
+    ('test.txt', 0, ['a', 'b', 'c', 'd']),
+    ('test.txt', 2, ['1', '2', '3', '4']),
+    ('test.txt', '2', ['1', '2', '3', '4']),
+    ])
+def test__get_header(name, skip, expected):
+    assert system.get_header(name, skip) == expected
 
 
-class TestFlatten:
-
-    def test__flatten_empty(self):
-        with pytest.raises(TypeError):
-            system.flatten()
-
-    def test__flatten_lists_ints_floats(self):
-        assert (system.flatten([[1, 2, 3], [4, 5, 6], [7., 8., 9.]]) ==
-                [1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-    def test__flatten_lists_string(self):
-        assert (system.flatten([['this'], ['is'], ['a'], ['test']]) ==
-                ['this', 'is', 'a', 'test'])
-
-    def test__flatten_list_int_string(self):
-        assert system.flatten([[1, 2, 3], 4, 'test']) == [1, 2, 3, 4, 'test']
-
-    def test__flatten_lists_empty(self):
-        assert system.flatten([[1, 2, 3], [], [7, 8, 9]]) == [1, 2, 3, 7, 8, 9]
-
-    def test__flatten_tuples_floats(self):
-        assert (system.flatten([(1, 2, 3), (4, 5, 6), (7, 8, 9)]) ==
-                [1, 2, 3, 4, 5, 6, 7, 8, 9])
+def test__flatten_empty():
+    with pytest.raises(TypeError):
+        system.flatten()
 
 
-class TestOSLoadFile:
-
-    @pytest.fixture(autouse=True)
-    def setup(self, request):
-        self.file_name = 'test.txt'
-        with open(self.file_name, 'w') as f:
-            f.write('line one\n')
-            f.write('line two\n')
-            f.write('line three\n')
-
-        def teardown():
-            os.remove(self.file_name)
-        request.addfinalizer(teardown)
-
-    def test__load_file_lines(self):
-        assert (system.load_file(self.file_name) ==
-                ['line one\n', 'line two\n', 'line three\n'])
-
-    def test__load_file_str(self):
-        assert (system.load_file(self.file_name, all_lines=False) ==
-                'line one\nline two\nline three\n')
-
-    def test__load_file_first_n_lines(self):
-        assert (system.load_file(self.file_name, all_lines=False,
-                                 first_n_lines=2) ==
-                ['line one\n', 'line two\n'])
+@pytest.mark.parametrize('matrix, expected', [
+    ([[1, 2, 3], [4, 5, 6], [7., 8., 9.]], [1, 2, 3, 4, 5, 6, 7, 8, 9]),
+    ([['this'], ['is'], ['a'], ['test']], ['this', 'is', 'a', 'test']),
+    ([[1, 2, 3], 4, 'test'], [1, 2, 3, 4, 'test']),
+    ([[1, 2, 3], [], [7, 8, 9]], [1, 2, 3, 7, 8, 9]),
+    ([(1, 2, 3), (4, 5, 6), (7, 8, 9)], [1, 2, 3, 4, 5, 6, 7, 8, 9]),
+    ])
+def test__flatten(matrix, expected):
+    assert system.flatten(matrix) == expected
 
 
-class TestOSLoadRecords:
-
-    @pytest.fixture(autouse=True)
-    def setup(self, request):
-        lines = ['a\tb\tc\td\n', '\n', '1\t2\t3\t4\n', '5\t6\t7\t8\n']
-
-        self.test_file = 'test.txt'
-        with open(self.test_file, 'w') as f:
-            f.write(''.join(lines))
-
-        self.test_no_header_file = 'test_no_header.txt'
-        with open(self.test_no_header_file, 'w') as f:
-            f.write(''.join(lines[2:]))
-
-        def teardown():
-            try:
-                os.remove('test.txt')
-                os.remove('test_no_header.txt')
-            except FileNotFoundError:
-                pass
-        request.addfinalizer(teardown)
-
-    def test__load_records_header_all_columns(self):
-        output = system.load_records(self.test_file, header_row=0, skip_rows=2)
-        assert np.all(output['a'] == np.array([1.0, 5.0]))
-        assert np.all(output['d'] == np.array([4.0, 8.0]))
-
-    def test__load_records_header_some_columns(self):
-        output = system.load_records(self.test_file, header_row=0, skip_rows=2,
-                                     cols=(0, 3))
-        assert np.all(output['a'] == np.array([1.0, 5.0]))
-        assert np.all(output['d'] == np.array([4.0, 8.0]))
-
-    def test__load_records_header_all_columns_define_formats(self):
-        output = system.load_records(self.test_file, header_row=0, skip_rows=2,
-                                     formats=('f8', 'i4', 'f8', 'i4'))
-        assert np.all(output['a'] == np.array([1.0, 5.0]))
-        assert np.all(output['d'] == np.array([4, 8]))
-
-    def test__load_records_no_header(self):
-        output = system.load_records(self.test_no_header_file, cols=(0, 3))
-        assert np.all(output['0'] == np.array([1.0, 5.0]))
-        assert np.all(output['3'] == np.array([4.0, 8.0]))
-
-    def test__load_records_no_header_include_names(self):
-        output = system.load_records(self.test_no_header_file,
-                                     names=('one', 'two', 'three', 'four'))
-        assert np.all(output['one'] == np.array([1.0, 5.0]))
-        assert np.all(output['four'] == np.array([4.0, 8.0]))
+@pytest.fixture(scope='session')
+def load_lines_setup():
+    file_name = 'test.txt'
+    with open(file_name, 'w') as f:
+        f.write('line one\n')
+        f.write('line two\n')
+        f.write('line three\n')
+    return file_name
 
 
-class TestPreserveCWD:
-
-    @pytest.fixture(autouse=True)
-    def setup(self, request):
-        self.original_dir = os.getcwd()
-        self.working_dir = osp.join(self.original_dir, 'junk')
-        self.file_name = 'junk.txt'
-
-        os.makedirs(self.working_dir, exist_ok=True)
-
-        def teardown():
-            shutil.rmtree(self.working_dir)
-        request.addfinalizer(teardown)
-
-    def test__file_creation(self, ):
-
-        @system.preserve_cwd(self.working_dir)
-        def test():
-            with open(self.file_name, 'w') as f:
-                f.close()
-
-        test()
-        assert osp.isfile(osp.join(self.working_dir, self.file_name))
-        assert os.getcwd() == self.original_dir
+@pytest.mark.usefixtures('load_lines_setup')
+@pytest.mark.parametrize('path, all_lines, first_n_lines, expected', [
+    ('test.txt', True, 0, ['line one\n', 'line two\n', 'line three\n']),
+    ('test.txt', False, 0, 'line one\nline two\nline three\n'),
+    ('test.txt', False, 2, ['line one\n', 'line two\n']),
+])
+def test__load_file(path, all_lines, first_n_lines, expected):
+    actual = system.load_file(path, all_lines, first_n_lines)
+    assert actual == expected
 
 
-class TestStatus:
+@pytest.fixture()
+def load_record_setup():
+    with open('test.txt', 'w') as f:
+        f.write(''.join(lines))
 
-    def test__normal_operation(self):
-
-        @system.status()
-        def print_num():
-            print('1, 2, 3')
-
-        f = io.StringIO()
-        with redirect_stdout(f):
-            print_num()
-
-        assert (f.getvalue().split()[:-3] ==
-                ['Execute:', 'print_num', '1,', '2,', '3', 'Completed:',
-                 'print_num'])
+    with open('test_no_header.txt', 'w') as f:
+        f.write(''.join(lines[2:]))
 
 
-class TestOSUnzipFile:
+@pytest.mark.usefixtures('load_record_setup')
+@pytest.mark.parametrize(('path, header, skip, cols, names, formats,'
+                          'a_key, a_expect, d_key, d_expect'), [
+    ('test.txt', 0, 2, ('all',), None, ('f8', ),
+     'a', np.array([1.0, 5.0]), 'd', np.array([4.0, 8.0])),
+    ('test.txt', 0, 2, (0, 3), None, ('f8', ),
+     'a', np.array([1.0, 5.0]), 'd', np.array([4.0, 8.0])),
+    ('test.txt', 0, 2, ('all',), None, ('f8', 'i4', 'f8', 'i4'),
+     'a', np.array([1.0, 5.0]), 'd', np.array([4, 8])),
+    ('test_no_header.txt', None, 0, (0, 3), None, ('f8', ),
+     '0', np.array([1.0, 5.0]), '3', np.array([4.0, 8.0])),
+    ('test_no_header.txt', None, 0, ('all', ), ('one', 'two', 'three', 'four'),
+     ('f8', ), 'one', np.array([1.0, 5.0]), 'four', np.array([4.0, 8.0])),
+])
+def test__load_records(path, header, skip, cols, names, formats,
+                       a_key, a_expect, d_key, d_expect):
+    output = system.load_records(path, header, skip, cols, names, formats)
+    assert np.all(output[a_key] == a_expect)
+    assert np.all(output[d_key] == d_expect)
 
-    @pytest.fixture(autouse=True)
-    def setup(self, request):
-        self.file_name = 'junk.txt'
-        with open(self.file_name, 'w') as f:
-            f.write('Test file')
-        subprocess.call(['gzip', self.file_name])
 
-        def teardown():
-            os.remove(self.file_name)
-        request.addfinalizer(teardown)
+@pytest.fixture()
+def preserve_cwd_setup(request):
+    original_dir = os.getcwd()
+    working_dir = osp.join(original_dir, 'junk')
+    file_name = 'junk.txt'
 
-    def test__normal_operation(self):
-        system.unzip_file('{}.gz'.format(self.file_name))
-        with open(self.file_name, 'r') as f:
-            text = f.read()
-        assert 'Test file' == text
+    os.makedirs(working_dir, exist_ok=True)
+
+    def teardown():
+        shutil.rmtree(working_dir)
+    request.addfinalizer(teardown)
+    return {'original_dir': original_dir, 'working_dir': working_dir,
+            'file_name': file_name}
+
+
+def test__preserve_cwd(preserve_cwd_setup):
+
+    @system.preserve_cwd(preserve_cwd_setup['working_dir'])
+    def test():
+        with open(preserve_cwd_setup['file_name'], 'w') as f:
+            f.close()
+
+    test()
+    assert osp.isfile(osp.join(preserve_cwd_setup['working_dir'],
+                               preserve_cwd_setup['file_name']))
+    assert os.getcwd() == preserve_cwd_setup['original_dir']
+
+
+def test__status():
+
+    @system.status()
+    def print_num():
+        print('1, 2, 3')
+
+    f = io.StringIO()
+    with redirect_stdout(f):
+        print_num()
+
+    assert (f.getvalue().split()[:-3] ==
+            ['Execute:', 'print_num', '1,', '2,', '3', 'Completed:',
+             'print_num'])
+
+
+@pytest.fixture(scope='function')
+def unzip_setup(request):
+    file_name = 'junk.txt'
+    with open(file_name, 'w') as f:
+        f.write('Test file')
+    subprocess.call(['gzip', file_name])
+
+    def teardown():
+        os.remove(file_name)
+    request.addfinalizer(teardown)
+    return file_name
+
+
+def test__unzip(unzip_setup):
+    system.unzip_file('{}.gz'.format(unzip_setup))
+    with open(unzip_setup, 'r') as f:
+        text = f.read()
+    assert 'Test file' == text
 
 
 class TestOSWalkDir:
@@ -260,24 +220,24 @@ class TestOSWalkDir:
                  osp.join(self.main_dir, 'main.png')])
 
 
-class TestOSZipFile:
+@pytest.fixture(scope='function')
+def zip_setup(request):
+    file_name = 'junk.txt'
+    with open(file_name, 'w') as f:
+        f.write('Test file')
 
-    @pytest.fixture(autouse=True)
-    def setup(self, request):
-        self.file_name = 'junk.txt'
-        with open(self.file_name, 'w') as f:
-            f.write('Test file')
+    def teardown():
+        try:
+            os.remove(file_name)
+        except FileNotFoundError:
+            os.remove('{}.gz'.format(file_name))
+    request.addfinalizer(teardown)
+    return file_name
 
-        def teardown():
-            try:
-                os.remove(self.file_name)
-            except OSError:
-                os.remove('{}.gz'.format(self.file_name))
-        request.addfinalizer(teardown)
 
-    def test__normal_operation(self):
-        system.zip_file(self.file_name)
-        subprocess.call(['gunzip', '{}.gz'.format(self.file_name)])
-        with open(self.file_name, 'r') as f:
-            text = f.read()
-        assert 'Test file' == text
+def test__zip_file(zip_setup):
+    system.zip_file(zip_setup)
+    subprocess.call(['gunzip', '{}.gz'.format(zip_setup)])
+    with open(zip_setup, 'r') as f:
+        text = f.read()
+    assert 'Test file' == text

@@ -16,8 +16,6 @@ import shutil
 import numpy as np
 import strumenti.notify as notify
 
-__version__ = '1.0.1'
-
 
 def get_header(path, header_row=0):
     """Extract header from the requested file.
