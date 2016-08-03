@@ -12,19 +12,25 @@ import matplotlib.pyplot as plt
 from strumenti import plot
 
 
+# Test axis_title
+axis_title = {'latex chars': ('test', 'm^2/s_5', 'Test ($\mathit{m^2/s_5}$)'),
+              'no units': ('test', None, 'Test'),
+              }
+
+
+@pytest.mark.parametrize('title, units, expected',
+                         list(axis_title.values()),
+                         ids=list(axis_title.keys()))
+def test__axis_title(title, units, expected):
+    assert plot.axis_title(title, units) == expected
+
+
 def test__axis_title_empty_arguments():
     with pytest.raises(TypeError):
         plot.axis_title()
 
 
-@pytest.mark.parametrize('title, units, expected', [
-    ('test', 'm^2/s_5', 'Test ($\mathit{m^2/s_5}$)'),
-    ('test', None, 'Test'),
-    ])
-def test__axis_title(title, units, expected):
-    assert plot.axis_title(title, units) == expected
-
-
+# Test save_plot
 @pytest.fixture()
 def plot_setup(request):
     file_name = 'test_image.png'
