@@ -35,6 +35,19 @@ sphere_multi_3d_degree = np.array([[3, 30, 20], [6, 60, 45]])
 empty = np.arange(0)
 
 
+# Test element_dimension
+element_dimension = {'values = int': (cart2d_multi, 2, 2),
+                     'values = list': (cart2d_multi, [2, 3], 2),
+                     }
+
+
+@pytest.mark.parametrize('array, dim, expected',
+                         list(element_dimension.values()),
+                         ids=list(element_dimension.keys()))
+def test__element_dimension(array, dim, expected):
+    assert coordinate.element_dimension(array, dim) == expected
+
+
 def test__element_dimension_empty():
     with pytest.raises(SystemExit):
         coordinate.element_dimension(empty, 2)
@@ -45,12 +58,27 @@ def test__element_dimension_wrong_values():
         coordinate.element_dimension(cart3d_multi, 2)
 
 
-@pytest.mark.parametrize('array, dim, expected', [
-    (cart2d_multi, 2, 2),
-    (cart2d_multi, [2, 3], 2)
-    ])
-def test__element_dimension(array, dim, expected):
-    assert coordinate.element_dimension(array, dim) == expected
+# Test cart2pol
+cart2pol = {'2D single': (cart2d_single, False, [[5, 0.9272952]]),
+            '2D single deg': (cart2d_single, True, [[5, 53.1301023]]),
+            '2D multi': (cart2d_multi, False,
+                         [[5, 0.9272952], [9.2195444, 0.8621700]]),
+            '2D multi deg': (cart2d_multi, True,
+                                [[5, 53.1301023], [9.2195444, 49.3987053]]),
+            '3D single': (cart3d_single, False, [[5, 0.9272952, 5]]),
+            '3D single deg': (cart3d_single, True, [[5, 53.1301023, 5]]),
+            '3D multi': (cart3d_multi, False,
+                         [[5, 0.9272952, 5], [9.2195444, 0.8621700, 8]]),
+            '3D multi deg': (cart3d_multi, True,
+                             [[5, 53.1301023, 5], [9.2195444, 49.3987053, 8]]),
+            }
+
+
+@pytest.mark.parametrize('pts, deg, expected',
+                         list(cart2pol.values()),
+                         ids=list(cart2pol.keys()))
+def test__cart2pol(pts, deg, expected):
+    assert np.allclose(coordinate.cart2pol(pts, deg), expected)
 
 
 def test__cart2pol_empty():
@@ -58,18 +86,25 @@ def test__cart2pol_empty():
         coordinate.cart2pol(empty)
 
 
-@pytest.mark.parametrize('pts, deg, expected', [
-    (cart2d_single, False, [[5, 0.9272952]]),
-    (cart2d_single, True, [[5, 53.1301023]]),
-    (cart2d_multi, False, [[5, 0.9272952], [9.2195444, 0.8621700]]),
-    (cart2d_multi, True, [[5, 53.1301023], [9.2195444, 49.3987053]]),
-    (cart3d_single, False, [[5, 0.9272952, 5]]),
-    (cart3d_single, True, [[5, 53.1301023, 5]]),
-    (cart3d_multi, False, [[5, 0.9272952, 5], [9.2195444, 0.8621700, 8]]),
-    (cart3d_multi, True, [[5, 53.1301023, 5], [9.2195444, 49.3987053, 8]]),
-    ])
-def test__cart2pol(pts, deg, expected):
-    assert np.allclose(coordinate.cart2pol(pts, deg), expected)
+# Test cart2sphere
+cart2sphere = {'3D single': (cart3d_single, False,
+                             [[7.0710678, 0.9272952, 0.7853981]]),
+               '3D single deg': (cart3d_single, True,
+                                 [[7.0710678, 53.1301023, 45]]),
+               '3D multi': (cart3d_multi, False,
+                            [[7.0710678, 0.9272952, 0.7853981],
+                             [12.2065556, 0.8621700, 0.8561033]]),
+               '3D multi deg': (cart3d_multi, True,
+                                [[7.0710678, 53.1301023, 45],
+                                 [12.2065556, 49.3987053, 49.0511101]]),
+               }
+
+
+@pytest.mark.parametrize('pts, deg, expected',
+                         list(cart2sphere.values()),
+                         ids=list(cart2sphere.keys()))
+def test__cart2sphere(pts, deg, expected):
+    assert np.allclose(coordinate.cart2sphere(pts, deg), expected)
 
 
 def test__cart2sphere_empty():
@@ -77,16 +112,31 @@ def test__cart2sphere_empty():
         coordinate.cart2sphere(empty)
 
 
-@pytest.mark.parametrize('pts, deg, expected', [
-    (cart3d_single, False, [[7.0710678, 0.9272952, 0.7853981]]),
-    (cart3d_single, True, [[7.0710678, 53.1301023, 45]]),
-    (cart3d_multi, False, [[7.0710678, 0.9272952, 0.7853981],
-                           [12.2065556, 0.8621700, 0.8561033]]),
-    (cart3d_multi, True, [[7.0710678, 53.1301023, 45],
-                          [12.2065556, 49.3987053, 49.0511101]]),
-    ])
-def test__cart2sphere(pts, deg, expected):
-    assert np.allclose(coordinate.cart2sphere(pts, deg), expected)
+# Test pol2cart
+pol2cart = {'polar 3D single': (pol_single_radian, False, [[2.5980762, 1.5]]),
+            'polar 3D signle deg': (pol_single_degree, True,
+                                    [[2.5980762, 1.5]]),
+            'polar 3D multi': (pol_multi_radian, False,
+                               [[2.5980762, 1.5], [3, 5.1961524]]),
+            'polar 3D multi deg': (pol_multi_degree, True,
+                                   [[2.5980762, 1.5], [3, 5.1961524]]),
+            'cylindrical 3D single': (cyl_single_radian, False,
+                                      [[2.5980762, 1.5, 5]]),
+            'cylindrical 3D single deg': (cyl_single_degree, True,
+                                          [[2.5980762, 1.5, 5]]),
+            'cylindrical 3D multi': (cyl_multi_radian, False,
+                                     [[2.5980762, 1.5, 5], [3, 5.1961524, 8]]),
+            'cylindrical 3D multi deg': (cyl_multi_degree, True,
+                                         [[2.5980762, 1.5, 5],
+                                          [3, 5.1961524, 8]]),
+            }
+
+
+@pytest.mark.parametrize('pts, deg, expected',
+                         list(pol2cart.values()),
+                         ids=list(pol2cart.keys()))
+def test_pol2cart(pts, deg, expected):
+    assert np.allclose(coordinate.pol2cart(pts, deg), expected)
 
 
 def test__pol2cart_empty():
@@ -94,32 +144,27 @@ def test__pol2cart_empty():
         coordinate.pol2cart(empty)
 
 
-@pytest.mark.parametrize('pts, deg, expected', [
-    (pol_single_radian, False, [[2.5980762, 1.5]]),
-    (pol_single_degree, True, [[2.5980762, 1.5]]),
-    (pol_multi_radian, False, [[2.5980762, 1.5], [3, 5.1961524]]),
-    (pol_multi_degree, True, [[2.5980762, 1.5], [3, 5.1961524]]),
-    (cyl_single_radian, False, [[2.5980762, 1.5, 5]]),
-    (cyl_single_degree, True, [[2.5980762, 1.5, 5]]),
-    (cyl_multi_radian, False, [[2.5980762, 1.5, 5], [3, 5.1961524, 8]]),
-    (cyl_multi_degree, True, [[2.5980762, 1.5, 5], [3, 5.1961524, 8]]),
-    ])
-def test_pol2cart(pts, deg, expected):
-    assert np.allclose(coordinate.pol2cart(pts, deg), expected)
+# Test sphere2cart
+sphere2cart = {'3D single': (sphere_single_3d_radian, False,
+                             [[0.8885943, 0.5130302, 2.8190778]]),
+               '3D single deg': (sphere_single_3d_degree, True,
+                                 [[0.8885943, 0.5130302, 2.8190778]]),
+               '3D multi': (sphere_multi_3d_radian, False,
+                            [[0.8885943, 0.5130302, 2.8190778],
+                             [2.1213203, 3.6742346, 4.2426406]]),
+               '3D multi deg': (sphere_multi_3d_degree, True,
+                                [[0.8885943, 0.5130302, 2.8190778],
+                                 [2.1213203, 3.6742346, 4.2426406]]),
+               }
+
+
+@pytest.mark.parametrize('pts, deg, expected',
+                         list(sphere2cart.values()),
+                         ids=list(sphere2cart.keys()))
+def test__sphere2cart(pts, deg, expected):
+    assert np.allclose(coordinate.sphere2cart(pts, deg), expected)
 
 
 def test__sphere2cart_empty():
     with pytest.raises(SystemExit):
         coordinate.sphere2cart(empty)
-
-
-@pytest.mark.parametrize('pts, deg, expected', [
-    (sphere_single_3d_radian, False, [[0.8885943, 0.5130302, 2.8190778]]),
-    (sphere_single_3d_degree, True, [[0.8885943, 0.5130302, 2.8190778]]),
-    (sphere_multi_3d_radian, False, [[0.8885943, 0.5130302, 2.8190778],
-                                     [2.1213203, 3.6742346, 4.2426406]]),
-    (sphere_multi_3d_degree, True, [[0.8885943, 0.5130302, 2.8190778],
-                                    [2.1213203, 3.6742346, 4.2426406]]),
-    ])
-def test__sphere2cart(pts, deg, expected):
-    assert np.allclose(coordinate.sphere2cart(pts, deg), expected)
