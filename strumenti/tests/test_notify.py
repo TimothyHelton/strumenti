@@ -9,28 +9,47 @@
 import pytest
 from strumenti import notify
 
-
-@pytest.mark.parametrize('qty, expected', [
-    (5.8, '*****\n'),
-    (10, '**********\n'),
-    ('10', '**********\n'),
-    (80, '*' * 80 + '\n'),
-    ])
+# Test astrix_line
+astrix_line = {'qty = float': (5.8, '*****\n'),
+               'qty = int': (10, '**********\n'),
+               'qty = str': ('10', '**********\n'),
+               'qty = defaults': (80, '*' * 80 + '\n'),
+               }
+@pytest.mark.parametrize('qty, expected',
+                         list(astrix_line.values()),
+                         ids=list(astrix_line.keys()))
 def test__astrix_line(qty, expected):
     assert notify.astrix_line(qty) == expected
 
 
-def test__notify_center_empty():
+# Test center
+center = {'one word': ('one', '=', 7, '\n= one ='),
+          'two words': ('one two', '=', 11, '\n= one two =')
+          }
+
+
+@pytest.mark.parametrize('stmt, fill, width, expected',
+                         list(center.values()),
+                         ids=list(center.keys()))
+def test__center(stmt, fill, width, expected):
+    assert notify.center(stmt, fill, width) == expected
+
+
+def test__center_empty():
     with pytest.raises(TypeError):
         notify.center()
 
 
-@pytest.mark.parametrize('stmt, fill, width, expected', [
-    ('one', '=', 7, '\n= one ='),
-    ('one two', '=', 11, '\n= one two =')
-    ])
-def test__center(stmt, fill, width, expected):
-    assert notify.center(stmt, fill, width) == expected
+# Test header
+header = {'module': ('test', '*' * 80 + '\n' * 3 + 'test\n'),
+          }
+
+
+@pytest.mark.parametrize('stmt, expected',
+                         list(header.values()),
+                         ids=list(header.keys()))
+def test_header(stmt, expected):
+    assert notify.header(stmt) == expected
 
 
 def test__header_empty():
@@ -38,11 +57,16 @@ def test__header_empty():
         notify.header()
 
 
-@pytest.mark.parametrize('stmt, expected', [
-    ('test', '*' * 80 + '\n' * 3 + 'test\n')
-    ])
-def test_header(stmt, expected):
-    assert notify.header(stmt) == expected
+# Test footer
+footer = {'module': ('test', '\n' * 2 + 'test\n' + '*' * 80 + '\n'),
+          }
+
+
+@pytest.mark.parametrize('stmt, expected',
+                         list(footer.values()),
+                         ids=list(footer.keys()))
+def test__footer(stmt, expected):
+    assert notify.footer(stmt) == expected
 
 
 def test__footer_empty():
@@ -50,21 +74,31 @@ def test__footer_empty():
         notify.footer()
 
 
-@pytest.mark.parametrize('stmt, expected', [
-    ('test', '\n' * 2 + 'test\n' + '*' * 80 + '\n')
-    ])
-def test__footer(stmt, expected):
-    assert notify.footer(stmt) == expected
+# Test section_break
+section_break = {'qty = defaults': (2, '\n' * 2),
+                 'qty = string': ('10', '\n' * 10),
+                 'qty = float': (10.0, '\n' * 10),
+                 'qty = int': (10, '\n' * 10),
+                 }
 
 
-@pytest.mark.parametrize('qty, expected', [
-    (2, '\n' * 2),
-    ('10', '\n' * 10),
-    (10.0, '\n' * 10),
-    (10, '\n' * 10),
-    ])
+@pytest.mark.parametrize('qty, expected',
+                         list(section_break.values()),
+                         ids=list(section_break.keys()))
 def test__section_break(qty, expected):
     assert notify.section_break(qty) == expected
+
+
+# Test status
+status = {'one word': ('one', '-', 7, '- One -'),
+          'two words': ('one two', '-', 11, '- One Two -'),
+          }
+
+@pytest.mark.parametrize('stmt, fill, width, expected',
+                         list(status.values()),
+                         ids=list(status.keys()))
+def test__status(stmt, fill, width, expected):
+    assert notify.status(stmt, fill, width).strip() == expected
 
 
 def test__status_empty():
@@ -72,19 +106,7 @@ def test__status_empty():
         notify.status()
 
 
-@pytest.mark.parametrize('stmt, fill, width, expected', [
-    ('one', '-', 7, '- One -'),
-    ('one two', '-', 11, '- One Two -'),
-    ])
-def test__notify(stmt, fill, width, expected):
-    assert notify.status(stmt, fill, width).strip() == expected
-
-
-def test__warn_empty():
-    with pytest.raises(TypeError):
-        notify.warn()
-
-
+# Test warn
 # pytest parametrize does not work with termcolor output
 def test__warn_one_word():
     actual = notify.warn('one').strip()
@@ -94,3 +116,8 @@ def test__warn_one_word():
 def test__warn_two_word():
     actual = notify.warn('one two').strip()
     assert actual == '!' * 19 + ' \x1b[5m\x1b[31mONE TWO\x1b[0m ' + '!' * 19
+
+
+def test__warn_empty():
+    with pytest.raises(TypeError):
+        notify.warn()
