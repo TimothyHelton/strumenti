@@ -20,6 +20,13 @@ from strumenti import system
 lines = ['a\tb\tc\td\n', '\n', '1\t2\t3\t4\n', '5\t6\t7\t8\n']
 
 
+# Test get_header
+get_header = {'defaults': ('test.txt', 0, ['a', 'b', 'c', 'd']),
+              'row 2': ('test.txt', 2, ['1', '2', '3', '4']),
+              'row 2 str': ('test.txt', '2', ['1', '2', '3', '4']),
+              }
+
+
 @pytest.fixture(scope='session')
 def fixture_get_header():
     with open('test.txt', 'w') as f:
@@ -30,13 +37,30 @@ def fixture_get_header():
 
 
 @pytest.mark.usefixtures('fixture_get_header')
-@pytest.mark.parametrize('name, skip, expected', [
-    ('test.txt', 0, ['a', 'b', 'c', 'd']),
-    ('test.txt', 2, ['1', '2', '3', '4']),
-    ('test.txt', '2', ['1', '2', '3', '4']),
-    ])
+@pytest.mark.parametrize('name, skip, expected',
+                         list(get_header.values()),
+                         ids=list(get_header.keys()))
 def test__get_header(name, skip, expected):
     assert system.get_header(name, skip) == expected
+
+
+# Test flatten
+flatten = {'lists ints floats': ([[1, 2, 3], [4, 5, 6], [7., 8., 9.]],
+                                 [1, 2, 3, 4, 5, 6, 7, 8, 9]),
+           'lists str': ([['this'], ['is'], ['a'], ['test']],
+                         ['this', 'is', 'a', 'test']),
+           'list int str': ([[1, 2, 3], 4, 'test'], [1, 2, 3, 4, 'test']),
+           'lists empty': ([[1, 2, 3], [], [7, 8, 9]], [1, 2, 3, 7, 8, 9]),
+           'tuples floats': ([(1, 2, 3), (4, 5, 6), (7, 8, 9)],
+                             [1, 2, 3, 4, 5, 6, 7, 8, 9]),
+           }
+
+
+@pytest.mark.parametrize('matrix, expected',
+                         list(flatten.values()),
+                         ids=list(flatten.keys()))
+def test__flatten(matrix, expected):
+    assert system.flatten(matrix) == expected
 
 
 def test__flatten_empty():
@@ -44,19 +68,17 @@ def test__flatten_empty():
         system.flatten()
 
 
-@pytest.mark.parametrize('matrix, expected', [
-    ([[1, 2, 3], [4, 5, 6], [7., 8., 9.]], [1, 2, 3, 4, 5, 6, 7, 8, 9]),
-    ([['this'], ['is'], ['a'], ['test']], ['this', 'is', 'a', 'test']),
-    ([[1, 2, 3], 4, 'test'], [1, 2, 3, 4, 'test']),
-    ([[1, 2, 3], [], [7, 8, 9]], [1, 2, 3, 7, 8, 9]),
-    ([(1, 2, 3), (4, 5, 6), (7, 8, 9)], [1, 2, 3, 4, 5, 6, 7, 8, 9]),
-    ])
-def test__flatten(matrix, expected):
-    assert system.flatten(matrix) == expected
+# Test load_file
+load_file = {'lines': ('test.txt', True, 0,
+                       ['line one\n', 'line two\n', 'line three\n']),
+             'str': ('test.txt', False, 0, 'line one\nline two\nline three\n'),
+             'first n lines': ('test.txt', False, 2,
+                               ['line one\n', 'line two\n']),
+             }
 
 
 @pytest.fixture(scope='session')
-def load_lines_setup():
+def load_file_setup():
     file_name = 'test.txt'
     with open(file_name, 'w') as f:
         f.write('line one\n')
@@ -65,15 +87,37 @@ def load_lines_setup():
     return file_name
 
 
-@pytest.mark.usefixtures('load_lines_setup')
-@pytest.mark.parametrize('path, all_lines, first_n_lines, expected', [
-    ('test.txt', True, 0, ['line one\n', 'line two\n', 'line three\n']),
-    ('test.txt', False, 0, 'line one\nline two\nline three\n'),
-    ('test.txt', False, 2, ['line one\n', 'line two\n']),
-])
+@pytest.mark.usefixtures('load_file_setup')
+@pytest.mark.parametrize('path, all_lines, first_n_lines, expected',
+                         list(load_file.values()),
+                         ids=list(load_file.keys()))
 def test__load_file(path, all_lines, first_n_lines, expected):
     actual = system.load_file(path, all_lines, first_n_lines)
     assert actual == expected
+
+
+# Test load_record
+load_record = {'header all cols': ('test.txt', 0, 2, ('all',), None, ('f8', ),
+                                   'a', np.array([1.0, 5.0]),
+                                   'd', np.array([4.0, 8.0])),
+               'header some cols': ('test.txt', 0, 2, (0, 3), None, ('f8', ),
+                                    'a', np.array([1.0, 5.0]),
+                                    'd', np.array([4.0, 8.0])),
+               'header all cols formats': ('test.txt', 0, 2, ('all',), None,
+                                           ('f8', 'i4', 'f8', 'i4'),
+                                           'a', np.array([1.0, 5.0]),
+                                           'd', np.array([4, 8])),
+               'no header some cols': ('test_no_header.txt', None, 0, (0, 3),
+                                       None, ('f8', ),
+                                       '0', np.array([1.0, 5.0]),
+                                       '3', np.array([4.0, 8.0])),
+               'no header all cols formats': ('test_no_header.txt', None, 0,
+                                              ('all', ),
+                                              ('one', 'two', 'three', 'four'),
+                                              ('f8', ),
+                                              'one', np.array([1.0, 5.0]),
+                                              'four', np.array([4.0, 8.0])),
+               }
 
 
 @pytest.fixture()
@@ -87,18 +131,9 @@ def load_record_setup():
 
 @pytest.mark.usefixtures('load_record_setup')
 @pytest.mark.parametrize(('path, header, skip, cols, names, formats,'
-                          'a_key, a_expect, d_key, d_expect'), [
-    ('test.txt', 0, 2, ('all',), None, ('f8', ),
-     'a', np.array([1.0, 5.0]), 'd', np.array([4.0, 8.0])),
-    ('test.txt', 0, 2, (0, 3), None, ('f8', ),
-     'a', np.array([1.0, 5.0]), 'd', np.array([4.0, 8.0])),
-    ('test.txt', 0, 2, ('all',), None, ('f8', 'i4', 'f8', 'i4'),
-     'a', np.array([1.0, 5.0]), 'd', np.array([4, 8])),
-    ('test_no_header.txt', None, 0, (0, 3), None, ('f8', ),
-     '0', np.array([1.0, 5.0]), '3', np.array([4.0, 8.0])),
-    ('test_no_header.txt', None, 0, ('all', ), ('one', 'two', 'three', 'four'),
-     ('f8', ), 'one', np.array([1.0, 5.0]), 'four', np.array([4.0, 8.0])),
-])
+                          'a_key, a_expect, d_key, d_expect'),
+                         list(load_record.values()),
+                         ids=list(load_record.keys()))
 def test__load_records(path, header, skip, cols, names, formats,
                        a_key, a_expect, d_key, d_expect):
     output = system.load_records(path, header, skip, cols, names, formats)
@@ -106,6 +141,7 @@ def test__load_records(path, header, skip, cols, names, formats,
     assert np.all(output[d_key] == d_expect)
 
 
+# Test preserve_cwd
 @pytest.fixture()
 def preserve_cwd_setup(request):
     original_dir = os.getcwd()
@@ -134,6 +170,7 @@ def test__preserve_cwd(preserve_cwd_setup):
     assert os.getcwd() == preserve_cwd_setup['original_dir']
 
 
+# Test status
 def test__status():
 
     @system.status()
@@ -149,6 +186,7 @@ def test__status():
              'print_num'])
 
 
+# Test unzip
 @pytest.fixture(scope='function')
 def unzip_setup(request):
     file_name = 'junk.txt'
@@ -169,6 +207,7 @@ def test__unzip(unzip_setup):
     assert 'Test file' == text
 
 
+# Test walk_dir
 class TestOSWalkDir:
 
     @pytest.fixture(autouse=True)
@@ -220,6 +259,7 @@ class TestOSWalkDir:
                  osp.join(self.main_dir, 'main.png')])
 
 
+# Test zip_file
 @pytest.fixture(scope='function')
 def zip_setup(request):
     file_name = 'junk.txt'
