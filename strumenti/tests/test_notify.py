@@ -23,16 +23,18 @@ def test__astrix_line(qty, expected):
 
 
 # Test center
-center = {'one word': ('one', '=', 7, '\n= one ='),
-          'two words': ('one two', '=', 11, '\n= one two =')
+center = {'one word': ({'statement': 'one', 'fill': '=', 'width': 7},
+                       '\n= one ='),
+          'two words': ({'statement': 'one two', 'fill': '=', 'width': 11},
+                        '\n= one two =')
           }
 
 
-@pytest.mark.parametrize('stmt, fill, width, expected',
+@pytest.mark.parametrize('kwargs, expected',
                          list(center.values()),
                          ids=list(center.keys()))
-def test__center(stmt, fill, width, expected):
-    assert notify.center(stmt, fill, width) == expected
+def test__center(kwargs, expected):
+    assert notify.center(**kwargs) == expected
 
 
 def test__center_empty():
@@ -90,15 +92,18 @@ def test__section_break(qty, expected):
 
 
 # Test status
-status = {'one word': ('one', '-', 7, '- One -'),
-          'two words': ('one two', '-', 11, '- One Two -'),
+status = {'one word': ({'statement': 'one', 'fill': '-', 'width': 7},
+                       '- One -'),
+          'two words': ({'statement': 'one two', 'fill': '-', 'width': 11},
+                        '- One Two -'),
           }
 
-@pytest.mark.parametrize('stmt, fill, width, expected',
+
+@pytest.mark.parametrize('kwargs, expected',
                          list(status.values()),
                          ids=list(status.keys()))
-def test__status(stmt, fill, width, expected):
-    assert notify.status(stmt, fill, width).strip() == expected
+def test__status(kwargs, expected):
+    assert notify.status(**kwargs).strip() == expected
 
 
 def test__status_empty():
