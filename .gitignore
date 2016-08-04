@@ -38,6 +38,7 @@ Thumbs.db
 *.zip
 
 # Profile files #
+*.coverage
 *.profile
 
 # PyCharm files #
