@@ -21,9 +21,12 @@ lines = ['a\tb\tc\td\n', '\n', '1\t2\t3\t4\n', '5\t6\t7\t8\n']
 
 
 # Test get_header
-get_header = {'defaults': ('test.txt', 0, ['a', 'b', 'c', 'd']),
-              'row 2': ('test.txt', 2, ['1', '2', '3', '4']),
-              'row 2 str': ('test.txt', '2', ['1', '2', '3', '4']),
+get_header = {'defaults': ({'path': 'test.txt', 'header_row': 0},
+                           ['a', 'b', 'c', 'd']),
+              'row 2': ({'path': 'test.txt', 'header_row': 2},
+                        ['1', '2', '3', '4']),
+              'row 2 str': ({'path': 'test.txt', 'header_row': '2'},
+                            ['1', '2', '3', '4']),
               }
 
 
@@ -37,11 +40,11 @@ def fixture_get_header():
 
 
 @pytest.mark.usefixtures('fixture_get_header')
-@pytest.mark.parametrize('name, skip, expected',
+@pytest.mark.parametrize('kwargs, expected',
                          list(get_header.values()),
                          ids=list(get_header.keys()))
-def test__get_header(name, skip, expected):
-    assert system.get_header(name, skip) == expected
+def test__get_header(kwargs, expected):
+    assert system.get_header(**kwargs) == expected
 
 
 # Test flatten
@@ -69,10 +72,12 @@ def test__flatten_empty():
 
 
 # Test load_file
-load_file = {'lines': ('test.txt', True, 0,
+load_file = {'lines': ({'path': 'test.txt'},
                        ['line one\n', 'line two\n', 'line three\n']),
-             'str': ('test.txt', False, 0, 'line one\nline two\nline three\n'),
-             'first n lines': ('test.txt', False, 2,
+             'str': ({'path': 'test.txt', 'all_lines': False},
+                     'line one\nline two\nline three\n'),
+             'first n lines': ({'path': 'test.txt', 'all_lines': False,
+                                'first_n_lines': 2},
                                ['line one\n', 'line two\n']),
              }
 
@@ -88,35 +93,35 @@ def load_file_setup():
 
 
 @pytest.mark.usefixtures('load_file_setup')
-@pytest.mark.parametrize('path, all_lines, first_n_lines, expected',
+@pytest.mark.parametrize('kwargs, expected',
                          list(load_file.values()),
                          ids=list(load_file.keys()))
-def test__load_file(path, all_lines, first_n_lines, expected):
-    actual = system.load_file(path, all_lines, first_n_lines)
+def test__load_file(kwargs, expected):
+    actual = system.load_file(**kwargs)
     assert actual == expected
 
 
 # Test load_record
-load_record = {'header all cols': ('test.txt', 0, 2, ('all',), None, ('f8', ),
-                                   'a', np.array([1.0, 5.0]),
-                                   'd', np.array([4.0, 8.0])),
-               'header some cols': ('test.txt', 0, 2, (0, 3), None, ('f8', ),
+load_record = {'header': ({'path': 'test.txt', 'header_row': 0, 'skip_rows': 2},
+                          'a', np.array([1.0, 5.0]),
+                          'd', np.array([4.0, 8.0])),
+               'header some cols': ({'path': 'test.txt', 'header_row': 0,
+                                     'skip_rows': 2, 'cols': (0, 3)},
                                     'a', np.array([1.0, 5.0]),
                                     'd', np.array([4.0, 8.0])),
-               'header all cols formats': ('test.txt', 0, 2, ('all',), None,
-                                           ('f8', 'i4', 'f8', 'i4'),
-                                           'a', np.array([1.0, 5.0]),
-                                           'd', np.array([4, 8])),
-               'no header some cols': ('test_no_header.txt', None, 0, (0, 3),
-                                       None, ('f8', ),
+               'header formats': ({'path': 'test.txt', 'header_row': 0,
+                                   'skip_rows': 2,
+                                   'formats': ('f8', 'i4', 'f8', 'i4')},
+                                  'a', np.array([1.0, 5.0]),
+                                  'd', np.array([4, 8])),
+               'no header some cols': ({'path': 'test_no_header.txt',
+                                        'cols': (0, 3)},
                                        '0', np.array([1.0, 5.0]),
                                        '3', np.array([4.0, 8.0])),
-               'no header all cols formats': ('test_no_header.txt', None, 0,
-                                              ('all', ),
-                                              ('one', 'two', 'three', 'four'),
-                                              ('f8', ),
-                                              'one', np.array([1.0, 5.0]),
-                                              'four', np.array([4.0, 8.0])),
+               'no header formats': ({'path': 'test_no_header.txt',
+                                      'names': ('one', 'two', 'three', 'four')},
+                                     'one', np.array([1.0, 5.0]),
+                                     'four', np.array([4.0, 8.0])),
                }
 
 
@@ -130,13 +135,11 @@ def load_record_setup():
 
 
 @pytest.mark.usefixtures('load_record_setup')
-@pytest.mark.parametrize(('path, header, skip, cols, names, formats,'
-                          'a_key, a_expect, d_key, d_expect'),
+@pytest.mark.parametrize(('kwargs, a_key, a_expect, d_key, d_expect'),
                          list(load_record.values()),
                          ids=list(load_record.keys()))
-def test__load_records(path, header, skip, cols, names, formats,
-                       a_key, a_expect, d_key, d_expect):
-    output = system.load_records(path, header, skip, cols, names, formats)
+def test__load_records(kwargs, a_key, a_expect, d_key, d_expect):
+    output = system.load_records(**kwargs)
     assert np.all(output[a_key] == a_expect)
     assert np.all(output[d_key] == d_expect)
 
