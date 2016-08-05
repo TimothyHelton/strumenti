@@ -112,15 +112,19 @@ def test__status_empty():
 
 
 # Test warn
-# pytest parametrize does not work with termcolor output
-def test__warn_one_word():
-    actual = notify.warn('one').strip()
-    assert actual == ('!' * 21 + ' \x1b[5m\x1b[31mONE\x1b[0m ' + '!' * 21)
+warn = {'1 word': ({'statement': 'one'},
+                   '\n' + '!' * 21 + ' \x1b[5m\x1b[31mONE\x1b[0m ' + '!' * 21),
+        '2 word': ({'statement': 'one two'},
+                   ('\n' + '!' * 19 + ' \x1b[5m\x1b[31mONE TWO\x1b[0m ' +
+                    '!' * 19)),
+        }
 
 
-def test__warn_two_word():
-    actual = notify.warn('one two').strip()
-    assert actual == '!' * 19 + ' \x1b[5m\x1b[31mONE TWO\x1b[0m ' + '!' * 19
+@pytest.mark.parametrize('kwargs, expected',
+                         list(warn.values()),
+                         ids=list(warn.values()))
+def test__warn(kwargs, expected):
+    assert notify.warn(**kwargs) == expected
 
 
 def test__warn_empty():
