@@ -184,9 +184,9 @@ def test__status():
     with redirect_stdout(f):
         print_num()
 
-    assert (f.getvalue().split()[:-3] ==
+    assert (f.getvalue().split()[:-1] ==
             ['Execute:', 'print_num', '1,', '2,', '3', 'Completed:',
-             'print_num'])
+             'print_num', '(runtime:'])
 
 
 # Test unzip

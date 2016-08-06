@@ -34,6 +34,7 @@ setup(
             'psycopg2',
             'pytest',
             'termcolor',
+            'wrapt',
             ],
         package_dir={'strumenti': 'strumenti'},
         include_package_data=True,

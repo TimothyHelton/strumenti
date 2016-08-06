@@ -9,11 +9,11 @@ Functions for performing tasks related to the operating system.
 """
 
 import datetime as dt
-import functools
 import gzip
 import os
 import shutil
 import numpy as np
+import wrapt
 import strumenti.notify as notify
 
 
@@ -118,39 +118,34 @@ def preserve_cwd(working_dir):
 
     :param str working_dir: path to working directory
     """
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapped(*args, **kwargs):
-            original_dir = os.getcwd()
-            os.chdir(working_dir)
+    @wrapt.decorator
+    def wrapper(wrapped, instance, args, kwargs):
+        original_dir = os.getcwd()
+        os.chdir(working_dir)
 
-            try:
-                func(*args, **kwargs)
-            finally:
-                os.chdir(original_dir)
+        try:
+            return wrapped(*args, *kwargs)
+        finally:
+            os.chdir(original_dir)
 
-        return wrapped
-    return decorator
+    return wrapper
 
 
 def status():
     """Decorator: Provide execution and completion status to terminal."""
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapped(*args, **kwargs):
+    @wrapt.decorator
+    def wrapper(wrapped, instance, args, kwargs):
+        print('\nExecute: {}'.format(wrapped.__name__))
+        start = dt.datetime.now()
+        try:
+            return wrapped(*args, **kwargs)
+        finally:
+            finish = dt.datetime.now()
+            run_time = finish - start
+            print('Completed: {}\t(runtime: {})'.format(wrapped.__name__,
+                                                        run_time))
 
-            print('\nExecute: {}'.format(func.__name__))
-            start = dt.datetime.now()
-            try:
-                func(*args, **kwargs)
-            finally:
-                finish = dt.datetime.now()
-                run_time = finish - start
-                print('Completed: {}\t(run time: {})'.format(func.__name__,
-                                                             run_time))
-
-        return wrapped
-    return decorator
+    return wrapper
 
 
 def unzip_file(path):
