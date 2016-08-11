@@ -20,11 +20,11 @@ import shlex
 import mock
 
 mock_modules = [
-    'gzip',
     'matplotlib',
     'matplotlib.pyplot',
     'numpy',
     'psycopg2',
+    'shutil',
     'strumenti',
     'termcolor',
     'termcolor.colored',
