@@ -17,8 +17,6 @@ import os.path as osp
 import tarfile
 from termcolor import colored
 
-__version__ = '1.0.0'
-
 
 class Manage:
     """Class will assist with managing Python packages.

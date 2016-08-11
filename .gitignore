@@ -1,5 +1,7 @@
 # Compiled source #
+build/*
 *.com
+dist/*
 *.egg-info/*
 *.class
 *.dll

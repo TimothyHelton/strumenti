@@ -11,9 +11,6 @@ Utilities for interfacing with PostgreSQL databases.
 import psycopg2
 
 
-__version__ = '1.0.0'
-
-
 def connection(db_name, user, password):
     """Connect to PostgreSQL database and establish a cursor.
 

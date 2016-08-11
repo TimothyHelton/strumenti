@@ -1,5 +1,5 @@
 #Tools
-This repository contains modules with common tools universal useful to any \
+This repository contains modules with common tools universal useful to any
 python project.
 
 ---
