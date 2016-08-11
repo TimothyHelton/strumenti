@@ -23,6 +23,7 @@ mock_modules = [
     'matplotlib',
     'matplotlib.pyplot',
     'numpy',
+    'strumenti.notify',
     'termcolor',
     'termcolor.colored',
     ]
