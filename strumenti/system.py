@@ -14,7 +14,7 @@ import os
 import shutil
 import numpy as np
 import wrapt
-import strumenti.notify as notify
+from strumenti import notify
 
 
 def get_header(path, header_row=0):
