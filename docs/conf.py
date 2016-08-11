@@ -23,9 +23,11 @@ mock_modules = [
     'matplotlib',
     'matplotlib.pyplot',
     'numpy',
+    'psycopg2',
     'strumenti.notify',
     'termcolor',
     'termcolor.colored',
+    'wrapt',
     ]
 for mod_name in mock_modules:
     sys.modules[mod_name] = mock.Mock()
