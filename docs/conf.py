@@ -20,6 +20,7 @@ import shlex
 import mock
 
 mock_modules = [
+    'datetime',
     'matplotlib',
     'matplotlib.pyplot',
     'numpy',
