@@ -16,22 +16,6 @@
 import sys
 import os
 import os.path as osp
-import shlex
-import mock
-
-mock_modules = [
-    'matplotlib',
-    'matplotlib.pyplot',
-    'numpy',
-    'psycopg2',
-    'strumenti',
-    'termcolor',
-    'termcolor.colored',
-    'wrapt',
-    'wrapt.decorator',
-    ]
-for mod_name in mock_modules:
-    sys.modules[mod_name] = mock.Mock()
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -76,7 +60,7 @@ author = 'Timothy Helton'
 # built documents.
 #
 # The short X.Y version.
-version = '1.0'
+version = '1.0.0'
 # The full version, including alpha/beta/rc tags.
 release = '1.0.0'
 
@@ -129,7 +113,13 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'scrolls'
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+if on_rtd:
+    html_theme = 'default'
+else:
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -148,7 +138,7 @@ html_title = 'Documentation'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'project_logo.png'
+# html_logo = 'project_logo.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
