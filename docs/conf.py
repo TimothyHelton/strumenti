@@ -28,6 +28,7 @@ mock_modules = [
     'termcolor',
     'termcolor.colored',
     'wrapt',
+    'wrapt.decorator',
     ]
 for mod_name in mock_modules:
     sys.modules[mod_name] = mock.Mock()

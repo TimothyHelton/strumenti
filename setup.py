@@ -38,7 +38,6 @@ setup(
             'pytest',
             'termcolor',
             'wrapt',
-            'wrapt.decorator',
             ],
         package_dir={'strumenti': 'strumenti'},
         include_package_data=True,
