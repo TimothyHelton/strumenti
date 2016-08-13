@@ -16,22 +16,21 @@
 import sys
 import os
 import os.path as osp
-import shlex
 import mock
 
-mock_modules = [
-    'matplotlib',
-    'matplotlib.pyplot',
-    'numpy',
-    'psycopg2',
-    'strumenti',
-    'termcolor',
-    'termcolor.colored',
-    'wrapt',
-    'wrapt.decorator',
-    ]
-for mod_name in mock_modules:
-    sys.modules[mod_name] = mock.Mock()
+# mock_modules = [
+#     'matplotlib',
+#     'matplotlib.pyplot',
+#     'numpy',
+#     'psycopg2',
+#     'strumenti',
+#     'termcolor',
+#     'termcolor.colored',
+#     'wrapt',
+#     'wrapt.decorator',
+#     ]
+# for mod_name in mock_modules:
+#     sys.modules[mod_name] = mock.Mock()
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -200,7 +199,7 @@ html_split_index = True
 #html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-#html_show_sphinx = True
+html_show_sphinx = False
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 html_show_copyright = False
