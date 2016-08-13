@@ -18,19 +18,19 @@ import os
 import os.path as osp
 import mock
 
-# mock_modules = [
-#     'matplotlib',
-#     'matplotlib.pyplot',
-#     'numpy',
-#     'psycopg2',
-#     'strumenti',
-#     'termcolor',
-#     'termcolor.colored',
-#     'wrapt',
-#     'wrapt.decorator',
-#     ]
-# for mod_name in mock_modules:
-#     sys.modules[mod_name] = mock.Mock()
+mock_modules = [
+    'matplotlib',
+    'matplotlib.pyplot',
+    'numpy',
+    'psycopg2',
+    'strumenti',
+    'termcolor',
+    'termcolor.colored',
+    'wrapt',
+    'wrapt.decorator',
+    ]
+for mod_name in mock_modules:
+    sys.modules[mod_name] = mock.Mock()
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
