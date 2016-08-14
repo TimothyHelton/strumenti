@@ -66,8 +66,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'strumenti'
-copyright = '2015, Timothy Helton'
+project = 'Strumenti'
+copyright = '2016, Strumenti Developers'
 author = 'Timothy Helton'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -202,7 +202,7 @@ html_split_index = True
 html_show_sphinx = False
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-html_show_copyright = False
+html_show_copyright = True
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -228,6 +228,11 @@ html_show_copyright = False
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'strumentidoc'
+
+html_context = {
+"display_github": False, # Add 'Edit on Github' link instead of 'View page source'
+"commit": False,
+}
 
 # -- Options for LaTeX output ---------------------------------------------
 
