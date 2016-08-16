@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """PostgreSQL Module
@@ -69,11 +69,19 @@ def table_drop(name):
 def table_insert(name, field_names):
     """Return command to add a record into a PostgreSQL database.
 
+
     :param str name: name of table to append
     :param field_names: names of fields
     :type: str or list
     :return: command to append records to a table
     :rtype: str
+
+    Example:
+
+    import psql
+
+    cur = psql.connection('db', 'user', 'password')
+    [cur.execute(psql.table_insert('table', 'field'), (x, )) for x in values]
     """
     if isinstance(field_names, str):
         field_names = [field_names]
@@ -100,6 +108,14 @@ def table_select(table_name, return_field='*', search_field=None):
         will return all table values)
     :returns: value corresponding to requested field
     :rtype: str
+
+    Example:
+
+    import psql
+
+    cur = psql.connection('db', 'user', 'password')
+    [cur.execute(psql.table_select('table', search_field='idx'), (x, )) \
+     for x in values]
     """
     base_cmd = 'SELECT {} FROM {}'.format(return_field, table_name)
 
