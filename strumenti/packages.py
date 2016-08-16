@@ -141,6 +141,13 @@ class Manage:
             if not execute.stderr:
                 print(colored('{:10}\n'.format('Complete'), 'green'))
 
+    def update_packages(self):
+        """Update to latest version of all packages."""
+        update_pkgs = self.outdated.keys()
+        self.install_packages(update_pkgs)
+        if update_pkgs:
+            self.update_requirements()
+
     def update_requirements(self):
         """Update the requirements.txt file.
 
@@ -162,8 +169,4 @@ class Manage:
 
 if __name__ == '__main__':
     p = Manage()
-    update_info = p.outdated
-    update_packages = update_info.keys()
-    p.install_packages(update_packages)
-    if update_packages:
-        p.update_requirements()
+    p.update_packages()
