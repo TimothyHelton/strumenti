@@ -29,7 +29,7 @@ def table_create(name, schema, serial=False, unique=None):
 
     :param str name: name of table
     :param list schema: schema of table provided in name data type pairs \
-        [(n_1, dt_1), (n_2, dt_2]
+        ['n_1, dt_1', 'n_2, dt_2']
     :param bool serial: a serialized index will be created for the table \
         and used as the primary key if True
     :param list unique: field names that define a unique record for the table
@@ -39,14 +39,14 @@ def table_create(name, schema, serial=False, unique=None):
     base_cmd = 'CREATE TABLE {name} ('.format(name=name)
 
     if serial:
-        serial_cmd = 'id SERIAL UNIQUE NOT NULL PRIMARY KEY,'
+        serial_cmd = 'id SERIAL UNIQUE NOT NULL PRIMARY KEY, '
     else:
         serial_cmd = ''
 
     schema_cmd = ', '.join(schema)
 
     if unique:
-        unique_cmd = ',UNIQUE ({fields})'.format(fields=', '.join(unique))
+        unique_cmd = ', UNIQUE ({fields})'.format(fields=', '.join(unique))
     else:
         unique_cmd = ''
 

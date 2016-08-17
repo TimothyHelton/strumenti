@@ -11,12 +11,32 @@ from strumenti import psql
 
 
 # Test table_create
+table_create = {'default': ({'name': 'test', 'schema': ['value, TEXT']},
+                            'CREATE TABLE test (value, TEXT);'),
+                'serial': ({'name': 'test', 'schema': ['value, TEXT'],
+                            'serial': True},
+                           ('CREATE TABLE test (id SERIAL UNIQUE NOT NULL '
+                            'PRIMARY KEY, value, TEXT);')),
+                'unique': ({'name': 'test', 'schema': ['value, TEXT'],
+                            'serial': True, 'unique': ['value']},
+                           ('CREATE TABLE test (id SERIAL UNIQUE NOT NULL '
+                            'PRIMARY KEY, value, TEXT, UNIQUE (value));')),
+                'multi': ({'name': 'test', 'schema': ['value1, TEXT',
+                                                      'value2, DATE']},
+                          'CREATE TABLE test (value1, TEXT, value2, DATE);'),
+                }
 
 
+@pytest.mark.parametrize('kwargs, expected',
+                         list(table_create.values()),
+                         ids=list(table_create.keys()))
+def test__table_create(kwargs, expected):
+    assert psql.table_create(**kwargs) == expected
 
 # Test table_drop
 table_drop = {'default': ('test', 'test'),
               }
+
 
 @pytest.mark.parametrize('name, expected',
                          list(table_drop.values()),
@@ -38,7 +58,7 @@ table_insert = {'str field': ({'name': 'test', 'field_names': 'one'},
 @pytest.mark.parametrize('kwargs, expected',
                          list(table_insert.values()),
                          ids=list(table_insert.keys()))
-def test__table_drop(kwargs, expected):
+def test__table_insert(kwargs, expected):
     assert (' '.join(psql.table_insert(**kwargs).split()) ==
             'INSERT INTO test ({}) VALUES ({});'.format(*expected))
 
