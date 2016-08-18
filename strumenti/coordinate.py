@@ -7,7 +7,9 @@
 """
 
 import sys
+
 import numpy as np
+
 from strumenti import notify
 
 

@@ -9,6 +9,7 @@ Functions for performing tasks related to matplotlib pyplot library.
 """
 
 import os.path as osp
+
 import matplotlib.pyplot as plt
 import numpy as np
 
