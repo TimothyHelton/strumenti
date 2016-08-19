@@ -211,10 +211,10 @@ def test__unzip(unzip_setup):
 
 
 # Test walk_dir
-class TestOSWalkDir:
+class TestWalkDir:
 
     @pytest.fixture(autouse=True)
-    def setup(self, request, tmpdir):
+    def setup(self, tmpdir):
         tmpdir.chdir()
 
         self.main_dir = osp.join(os.getcwd(), 'test_walk_dir')
@@ -240,11 +240,6 @@ class TestOSWalkDir:
         make_files_1()
         make_files_2()
 
-        def teardown():
-            tmpdir.chdir()
-            shutil.rmtree(self.main_dir)
-        request.addfinalizer(teardown)
-
     def test__no_files_to_find(self):
         assert system.walk_dir('.txt') == []
 
@@ -264,17 +259,12 @@ class TestOSWalkDir:
 
 # Test zip_file
 @pytest.fixture(scope='function')
-def zip_setup(request):
+def zip_setup(tmpdir):
+    tmpdir.chdir()
     file_name = 'junk.txt'
     with open(file_name, 'w') as f:
         f.write('Test file')
 
-    def teardown():
-        try:
-            os.remove(file_name)
-        except FileNotFoundError:
-            os.remove('{}.gz'.format(file_name))
-    request.addfinalizer(teardown)
     return file_name
 
 
