@@ -15,6 +15,8 @@ astrix_line = {'qty = float': (5.8, '*****\n'),
                'qty = str': ('10', '**********\n'),
                'qty = defaults': (80, '*' * 80 + '\n'),
                }
+
+
 @pytest.mark.parametrize('qty, expected',
                          list(astrix_line.values()),
                          ids=list(astrix_line.keys()))

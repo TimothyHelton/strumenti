@@ -30,8 +30,9 @@ get_header = {'defaults': ({'path': 'test.txt', 'header_row': 0},
               }
 
 
-@pytest.fixture(scope='session')
-def fixture_get_header():
+@pytest.fixture()
+def fixture_get_header(tmpdir):
+    tmpdir.chdir()
     with open('test.txt', 'w') as f:
         f.write(''.join(lines))
 
