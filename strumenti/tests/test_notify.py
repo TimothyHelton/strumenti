@@ -124,7 +124,7 @@ warn = {'1 word': ({'statement': 'one'},
 
 @pytest.mark.parametrize('kwargs, expected',
                          list(warn.values()),
-                         ids=list(warn.values()))
+                         ids=list(warn.keys()))
 def test__warn(kwargs, expected):
     assert notify.warn(**kwargs) == expected
 
