@@ -16,7 +16,10 @@ import os
 import os.path as osp
 import tarfile
 
-from termcolor import colored
+from strumenti import system
+
+
+logger = system.setup_logger()
 
 
 class Manage:
@@ -78,7 +81,7 @@ class Manage:
                                 '--wheel-dir={}'.format(self.wheel_path),
                                 '{}=={}'.format(pkg, new_version)],
                                stdout=f, stderr=f)
-            print(colored('{:15}{}'.format('Complete:', pkg), 'green'))
+            logger.info('{:15}{}'.format('Complete:', pkg))
 
     def get_wheels(self):
         """Get the absolute path for all wheel files."""
@@ -102,8 +105,7 @@ class Manage:
 
         if outdated:
             if not packages:
-                print(colored('\nAll installed packages are up to date.',
-                              'green'))
+                logger.info('\nAll installed packages are up to date.')
             else:
                 self._outdated = {x[0]: versions(x[2], x[4]) for x in packages}
         else:
@@ -134,13 +136,13 @@ class Manage:
             if isinstance(pkg, tuple):
                 pkg = '{}=={}'.format(pkg[0], pkg[1])
 
-            print(colored('\n{:10}{}'.format('Install:', pkg), 'blue'))
+            logger.info('\n{:10}{}'.format('Install:', pkg))
             cmd.append(pkg)
             with open(self.log_file, 'a') as f:
                 execute = subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE)
 
             if not execute.stderr:
-                print(colored('{:10}\n'.format('Complete'), 'green'))
+                logger.info('{:10}\n'.format('Complete'))
 
     def update_packages(self):
         """Update to latest version of all packages."""
@@ -159,13 +161,12 @@ class Manage:
             execute = subprocess.run(['pip', 'freeze'], stdout=subprocess.PIPE)
             with open(self.req_txt_path, 'w') as f:
                 f.write(execute.stdout.decode('utf-8'))
-            stmt = ('\nUpdated Requirements file: {}'
-                    '\n').format(self.req_txt_path)
-            print(colored(stmt, 'green'))
+            logger.info(('\nUpdated Requirements file: {}'
+                         '\n').format(self.req_txt_path))
         except IOError:
-            stmt = ('\nFile Not Found: {}\n'
-                    'Requirements File Not Updated\n').format(self.req_txt_path)
-            print(colored(stmt, 'red'))
+            logger.error('\nFile Not Found: {}\n'
+                         'Requirements File Not Updated'
+                         '\n').format(self.req_txt_path)
 
 
 if __name__ == '__main__':

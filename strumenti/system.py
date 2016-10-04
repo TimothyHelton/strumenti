@@ -13,6 +13,7 @@ import gzip
 import os
 import shutil
 
+import colorlog
 import numpy as np
 import wrapt
 
@@ -131,6 +132,20 @@ def preserve_cwd(working_dir):
             os.chdir(original_dir)
 
     return wrapper
+
+
+def setup_logger():
+    """Setup module logger.
+
+    :returns: instance of the color logger
+    :rtype: logging.RootLogger
+    """
+    logger = colorlog.getLogger()
+    logger.setLevel(colorlog.colorlog.logging.DEBUG)
+    handler = colorlog.StreamHandler()
+    handler.setFormatter(colorlog.ColoredFormatter('%(log_color)s%(message)s'))
+    logger.addHandler(handler)
+    return logger
 
 
 def status():
