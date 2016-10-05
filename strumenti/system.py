@@ -10,10 +10,10 @@ Functions for performing tasks related to the operating system.
 
 import datetime as dt
 import gzip
+import logging
 import os
 import shutil
 
-import colorlog
 import numpy as np
 import wrapt
 
@@ -45,6 +45,20 @@ def flatten(matrix):
     matrix = [list(x) if isinstance(x, tuple) else
               [x] if not isinstance(x, list) else x for x in matrix]
     return [x for row in matrix for x in row]
+
+
+def logger_setup(log_file=None, log_level=logging.INFO):
+    """Setup logging.
+
+    :param log_file: name of log file
+    :type: None str
+    :param str log_level: desired log level (debug, info, warning, error, \
+        critical)
+    """
+    date_format = '%m/%d/%Y %I:%M:%S'
+    log_format = '%(asctime)s  %(levelname)8s  -> %(name)s <-  %(message)s\n'
+    logging.basicConfig(datefmt=date_format, format=log_format,
+                        filename=log_file, level=log_level)
 
 
 def load_file(path, all_lines=True, first_n_lines=0):
@@ -134,34 +148,20 @@ def preserve_cwd(working_dir):
     return wrapper
 
 
-def setup_logger():
-    """Setup module logger.
-
-    :returns: instance of the color logger
-    :rtype: logging.RootLogger
-    """
-    logger = colorlog.getLogger()
-    logger.setLevel(colorlog.colorlog.logging.DEBUG)
-    handler = colorlog.StreamHandler()
-    handler.setFormatter(colorlog.ColoredFormatter('%(log_color)s%(message)s'))
-    logger.addHandler(handler)
-    return logger
-
-
 def status():
     """Decorator: Provide execution and completion status to terminal."""
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
-        print('\nExecute: {}'.format(wrapped.__name__))
+        logging.info('\nExecute: {}'.format(wrapped.__name__))
         start = dt.datetime.now()
         try:
             return wrapped(*args, **kwargs)
         finally:
             finish = dt.datetime.now()
             run_time = finish - start
-            print('Completed: {}\t(runtime: {})'.format(wrapped.__name__,
-                                                        run_time))
-
+            logging.info('Completed: {}\t(runtime: {})'.format(wrapped.__name__,
+                                                               run_time))
+            
     return wrapper
 
 
