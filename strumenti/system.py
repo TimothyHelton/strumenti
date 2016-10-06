@@ -47,18 +47,37 @@ def flatten(matrix):
     return [x for row in matrix for x in row]
 
 
-def logger_setup(log_file=None, log_level=logging.INFO):
+def logger_setup(log_file=None, master_level=logging.DEBUG,
+                 console_level=logging.DEBUG, file_level=logging.WARNING):
     """Setup logging.
+
+    .. note:: available log levels are DEBUG, INFO, WARNING, ERROR and CRITICAL
 
     :param log_file: name of log file
     :type: None str
-    :param str log_level: desired log level (debug, info, warning, error, \
-        critical)
+    :param str master_level: desired master log level
+    :param str console_level: desired log level for console
+    :param str file_level: desired log level for file
     """
     date_format = '%m/%d/%Y %I:%M:%S'
     log_format = '%(asctime)s  %(levelname)8s  -> %(name)s <-  %(message)s\n'
-    logging.basicConfig(datefmt=date_format, format=log_format,
-                        filename=log_file, level=log_level)
+    formatter = logging.Formatter(fmt=log_format, datefmt=date_format)
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(master_level)
+
+    if not logger.handlers:
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(console_level)
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+
+        file_handler = logging.FileHandler(filename=log_file)
+        file_handler.setLevel(file_level)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
+    return logger
 
 
 def load_file(path, all_lines=True, first_n_lines=0):
@@ -152,16 +171,16 @@ def status():
     """Decorator: Provide execution and completion status to terminal."""
     @wrapt.decorator
     def wrapper(wrapped, instance, args, kwargs):
-        logging.info('\nExecute: {}'.format(wrapped.__name__))
+        print('\nExecute: {}'.format(wrapped.__name__))
         start = dt.datetime.now()
         try:
             return wrapped(*args, **kwargs)
         finally:
             finish = dt.datetime.now()
             run_time = finish - start
-            logging.info('Completed: {}\t(runtime: {})'.format(wrapped.__name__,
-                                                               run_time))
-            
+            print('Completed: {}\t(runtime: {})'.format(wrapped.__name__,
+                                                        run_time))
+
     return wrapper
 
 

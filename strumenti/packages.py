@@ -20,7 +20,10 @@ import tarfile
 from strumenti import system
 
 
-system.logger_setup(log_file=None, log_level=logging.DEBUG)
+logger = system.logger_setup(log_file='packages.log',
+                             master_level=logging.DEBUG,
+                             console_level=logging.DEBUG,
+                             file_level=logging.WARNING)
 
 
 class Manage:
@@ -82,7 +85,7 @@ class Manage:
                                 '--wheel-dir={}'.format(self.wheel_path),
                                 '{}=={}'.format(pkg, new_version)],
                                stdout=f, stderr=f)
-            logging.info('{:15}{}'.format('Complete:', pkg))
+            logger.info('{:15}{}'.format('Complete:', pkg))
 
     def get_wheels(self):
         """Get the absolute path for all wheel files."""
@@ -106,7 +109,7 @@ class Manage:
 
         if outdated:
             if not packages:
-                logging.info('All installed packages are up to date.')
+                logger.info('All installed packages are up to date.')
             else:
                 self._outdated = {x[0]: versions(x[2], x[4]) for x in packages}
         else:
@@ -137,13 +140,13 @@ class Manage:
             if isinstance(pkg, tuple):
                 pkg = '{}=={}'.format(pkg[0], pkg[1])
 
-            logging.info('\n{:10}{}'.format('Install:', pkg))
+            logger.info('\n{:10}{}'.format('Install:', pkg))
             cmd.append(pkg)
             with open(self.log_file, 'a') as f:
                 execute = subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE)
 
             if not execute.stderr:
-                logging.info('{:10}\n'.format('Complete'))
+                logger.info('{:10}\n'.format('Complete'))
 
     def update_packages(self):
         """Update to latest version of all packages."""
@@ -162,12 +165,12 @@ class Manage:
             execute = subprocess.run(['pip', 'freeze'], stdout=subprocess.PIPE)
             with open(self.req_txt_path, 'w') as f:
                 f.write(execute.stdout.decode('utf-8'))
-            logging.info(('\nUpdated Requirements file: {}'
-                          '\n').format(self.req_txt_path))
+            logger.info(('\nUpdated Requirements file: {}'
+                         '\n').format(self.req_txt_path))
         except IOError:
-            logging.error('\nFile Not Found: {}\n'
-                          'Requirements File Not Updated'
-                          '\n').format(self.req_txt_path)
+            logger.error('\nFile Not Found: {}\n'
+                         'Requirements File Not Updated'
+                         '\n').format(self.req_txt_path)
 
 
 if __name__ == '__main__':
