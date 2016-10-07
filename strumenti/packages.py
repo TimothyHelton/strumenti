@@ -20,12 +20,6 @@ import tarfile
 from strumenti import system
 
 
-logger = system.logger_setup(log_file='packages.log',
-                             master_level=logging.DEBUG,
-                             console_level=logging.DEBUG,
-                             file_level=logging.WARNING)
-
-
 class Manage:
     """Class will assist with managing Python packages.
 
@@ -174,5 +168,9 @@ class Manage:
 
 
 if __name__ == '__main__':
+    logger = system.logger_setup(log_file='packages.log',
+                                 master_level=logging.DEBUG,
+                                 console_level=logging.DEBUG,
+                                 file_level=logging.WARNING)
     p = Manage()
     p.update_packages()

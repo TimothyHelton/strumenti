@@ -14,6 +14,7 @@ import logging
 import os
 import shutil
 
+import chromalog
 import numpy as np
 import wrapt
 
@@ -61,21 +62,24 @@ def logger_setup(log_file=None, master_level=logging.DEBUG,
     """
     date_format = '%m/%d/%Y %I:%M:%S'
     log_format = '%(asctime)s  %(levelname)8s  -> %(name)s <-  %(message)s\n'
+    color_formatter = chromalog.log.ColorizingFormatter(fmt=log_format,
+                                                        datefmt=date_format)
     formatter = logging.Formatter(fmt=log_format, datefmt=date_format)
 
     logger = logging.getLogger(__name__)
     logger.setLevel(master_level)
 
     if not logger.handlers:
-        console_handler = logging.StreamHandler()
+        console_handler = chromalog.log.ColorizingStreamHandler()
         console_handler.setLevel(console_level)
-        console_handler.setFormatter(formatter)
+        console_handler.setFormatter(color_formatter)
         logger.addHandler(console_handler)
 
-        file_handler = logging.FileHandler(filename=log_file)
-        file_handler.setLevel(file_level)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+        if log_file:
+            file_handler = logging.FileHandler(filename=log_file)
+            file_handler.setLevel(file_level)
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
 
     return logger
 
