@@ -9,7 +9,7 @@ Functions for notifying the user are contained in this module.
 """
 
 
-def astrix_line(qty=80):
+def astrix_line(qty: int=80) -> str:
     """Return break line of astrix characters.
 
     :param int qty: number of * characters to be returned
@@ -19,7 +19,7 @@ def astrix_line(qty=80):
     return '*' * int(qty) + '\n'
 
 
-def center(statement, fill='=', width=60):
+def center(statement: str, fill: str='=', width: int=60) -> str:
     """Return statement centered by spaces and fill characters.
 
     :param str statement: statement to be returned
@@ -32,7 +32,7 @@ def center(statement, fill='=', width=60):
     return '\n' + stmt_str.center(width, fill)
 
 
-def header(statement):
+def header(statement: str) -> str:
     """Return a line of asterisks two blank lines and the header statement.
 
     :param str statement: header statement
@@ -42,7 +42,7 @@ def header(statement):
     return ''.join((astrix_line(), section_break(), statement, '\n'))
 
 
-def footer(statement):
+def footer(statement: str) -> str:
     """Return two blank lines the footer statement then a row of asterisks.
 
     :param str statement: footer statement
@@ -52,7 +52,7 @@ def footer(statement):
     return ''.join((section_break(), statement, '\n', astrix_line()))
 
 
-def section_break(qty=2):
+def section_break(qty: int=2) -> str:
     """Return multiple line break characters.
 
     :param int qty: number of line break characters (default: 2)
@@ -62,7 +62,7 @@ def section_break(qty=2):
     return '\n' * int(qty)
 
 
-def status(statement, fill='-', width=40):
+def status(statement: str, fill: str='-', width: int=40) -> str:
     """Return intermediary statements.
 
     :param str statement: statement to be returned
@@ -74,7 +74,7 @@ def status(statement, fill='-', width=40):
     return center(statement.title(), fill=fill, width=width)
 
 
-def warn(statement, fill='!'):
+def warn(statement: str, fill: str='!') -> str:
     """Return blinking statement formatted in all caps in the color red.
 
     :param str statement: warning statement
