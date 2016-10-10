@@ -8,8 +8,6 @@ Functions for notifying the user are contained in this module.
 .. moduleauthor:: Timothy Helton <timothy.j.helton@gmail.com>
 """
 
-from termcolor import colored
-
 
 def astrix_line(qty=80):
     """Return break line of astrix characters.
@@ -84,5 +82,5 @@ def warn(statement, fill='!'):
     :returns: formatted warning statement
     :rtype: str
     """
-    stmt = colored(statement.upper(), color='red', attrs=['blink'])
+    stmt = statement.upper()
     return center(stmt, fill=fill)

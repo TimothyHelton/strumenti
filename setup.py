@@ -37,7 +37,6 @@ setup(
             'Pint',
             'psycopg2',
             'pytest',
-            'termcolor',
             'wrapt',
             ],
         package_dir={'strumenti': 'strumenti'},

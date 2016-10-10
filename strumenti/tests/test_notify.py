@@ -115,10 +115,10 @@ def test__status_empty():
 
 # Test warn
 warn = {'1 word': ({'statement': 'one'},
-                   '\n' + '!' * 21 + ' \x1b[5m\x1b[31mONE\x1b[0m ' + '!' * 21),
+                   '\n' + '!' * 27 + ' ONE ' + '!' * 28),
         '2 word': ({'statement': 'one two'},
-                   ('\n' + '!' * 19 + ' \x1b[5m\x1b[31mONE TWO\x1b[0m ' +
-                    '!' * 19)),
+                   ('\n' + '!' * 25 + ' ONE TWO ' +
+                    '!' * 26)),
         }
 
 

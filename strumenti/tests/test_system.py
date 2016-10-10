@@ -20,6 +20,20 @@ from strumenti import system
 lines = ['a\tb\tc\td\n', '\n', '1\t2\t3\t4\n', '5\t6\t7\t8\n']
 
 
+# Test check_list
+check_list = {'string': ('test', ['test']),
+              'tuple': (('test', 'tuple'), ['test', 'tuple']),
+              'list': (['test', 'list'], ['test', 'list']),
+              }
+
+
+@pytest.mark.parametrize('variable, expected',
+                         list(check_list.values()),
+                         ids=list(check_list.keys()))
+def test__check_list(variable, expected):
+    assert system.check_list(variable) == expected
+
+
 # Test get_header
 get_header = {'defaults': ({'path': 'test.txt', 'header_row': 0},
                            ['a', 'b', 'c', 'd']),
@@ -103,7 +117,8 @@ def test__load_file(kwargs, expected):
 
 
 # Test load_record
-load_record = {'header': ({'path': 'test.txt', 'header_row': 0, 'skip_rows': 2},
+load_record = {'header': ({'path': 'test.txt', 'header_row': 0,
+                           'skip_rows': 2},
                           'a', np.array([1.0, 5.0]),
                           'd', np.array([4.0, 8.0])),
                'header some cols': ({'path': 'test.txt', 'header_row': 0,
@@ -120,7 +135,8 @@ load_record = {'header': ({'path': 'test.txt', 'header_row': 0, 'skip_rows': 2},
                                        '0', np.array([1.0, 5.0]),
                                        '3', np.array([4.0, 8.0])),
                'no header formats': ({'path': 'test_no_header.txt',
-                                      'names': ('one', 'two', 'three', 'four')},
+                                      'names': ('one', 'two', 'three',
+                                                'four')},
                                      'one', np.array([1.0, 5.0]),
                                      'four', np.array([4.0, 8.0])),
                }

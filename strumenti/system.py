@@ -21,6 +21,20 @@ import wrapt
 from strumenti import notify
 
 
+def check_list(variable):
+    """Convert argument variable into a list.
+
+    :param variable: object to convert into a list
+    :returns: list object of argument variable
+    :rtype: list
+    """
+    if isinstance(variable, str):
+        return [variable]
+    if isinstance(variable, tuple):
+        return list(variable)
+    return variable
+
+
 def get_header(path, header_row=0):
     """Extract header from the requested file.
 
@@ -59,6 +73,8 @@ def logger_setup(log_file=None, master_level=logging.DEBUG,
     :param str master_level: desired master log level
     :param str console_level: desired log level for console
     :param str file_level: desired log level for file
+    :returns: logger object
+    :rtype: logging.Logger
     """
     date_format = '%m/%d/%Y %I:%M:%S'
     log_format = '%(asctime)s  %(levelname)8s  -> %(name)s <-  %(message)s\n'

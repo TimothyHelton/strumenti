@@ -65,7 +65,7 @@ cart2pol = {'2D single': ({'pts': cart2d_single}, [[5, 0.9272952]]),
             '2D multi': ({'pts': cart2d_multi},
                          [[5, 0.9272952], [9.2195444, 0.8621700]]),
             '2D multi deg': ({'pts': cart2d_multi, 'degrees': True},
-                                [[5, 53.1301023], [9.2195444, 49.3987053]]),
+                             [[5, 53.1301023], [9.2195444, 49.3987053]]),
             '3D single': ({'pts': cart3d_single}, [[5, 0.9272952, 5]]),
             '3D single deg': ({'pts': cart3d_single, 'degrees': True},
                               [[5, 53.1301023, 5]]),
@@ -115,8 +115,10 @@ def test__cart2sphere_empty():
 
 
 # Test pol2cart
-pol2cart = {'polar 3D single': ({'pts': pol_single_radian}, [[2.5980762, 1.5]]),
-            'polar 3D signle deg': ({'pts': pol_single_degree, 'degrees': True},
+pol2cart = {'polar 3D single': ({'pts': pol_single_radian},
+                                [[2.5980762, 1.5]]),
+            'polar 3D signle deg': ({'pts': pol_single_degree,
+                                     'degrees': True},
                                     [[2.5980762, 1.5]]),
             'polar 3D multi': ({'pts': pol_multi_radian},
                                [[2.5980762, 1.5], [3, 5.1961524]]),

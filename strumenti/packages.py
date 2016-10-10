@@ -20,6 +20,12 @@ import tarfile
 from strumenti import system
 
 
+log_file = 'packages_{}.log'.format(dt.date(dt.now()))
+master_log = logging.DEBUG
+console_log = logging.INFO
+file_log = logging.DEBUG
+
+
 class Manage:
     """Class will assist with managing Python packages.
 
@@ -34,8 +40,8 @@ class Manage:
             packages (this includes all dependencies)
         - **wheel_path**: *str* path to the temporary wheelhouse directory
     """
-    def __init__(self):
-        self.log_file = 'packages_{}.log'.format(dt.date(dt.now()))
+    def __init__(self, logging_file=log_file):
+        self.log_file = logging_file
         self._outdated = {}
         self._packages = {}
         self.req_txt_path = 'requirements.txt'
@@ -71,15 +77,24 @@ class Manage:
 
         :param iterable packages: names of packages to upgrade
         """
+        if not self._packages:
+            self.list_packages()
+
+        packages = system.check_list(packages)
+
         os.makedirs(self.wheel_path, exist_ok=True)
         for pkg in packages:
-            new_version = self._outdated[packages].new_ver
-            with open(self.log_file, 'a') as f:
-                subprocess.run(['pip', 'wheel',
-                                '--wheel-dir={}'.format(self.wheel_path),
-                                '{}=={}'.format(pkg, new_version)],
-                               stdout=f, stderr=f)
-            logger.info('{:15}{}'.format('Complete:', pkg))
+            logging.info('{:15}{}'.format('Create Wheel:', pkg))
+            version = self._packages[pkg]
+            proc = subprocess.Popen(['pip', 'wheel',
+                                     '--wheel-dir={}'.format(self.wheel_path),
+                                     '{}=={}'.format(pkg, version)],
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+            output, error = proc.communicate()
+            logging.debug(output.decode())
+            logging.error(error.decode())
+            logging.info('{:15}{}'.format('Complete:', pkg))
 
     def get_wheels(self):
         """Get the absolute path for all wheel files."""
@@ -103,7 +118,7 @@ class Manage:
 
         if outdated:
             if not packages:
-                logger.info('All installed packages are up to date.')
+                logging.info('All installed packages are up to date.')
             else:
                 self._outdated = {x[0]: versions(x[2], x[4]) for x in packages}
         else:
@@ -134,13 +149,15 @@ class Manage:
             if isinstance(pkg, tuple):
                 pkg = '{}=={}'.format(pkg[0], pkg[1])
 
-            logger.info('\n{:10}{}'.format('Install:', pkg))
+            logging.info('\n{:10}{}'.format('Install:', pkg))
             cmd.append(pkg)
-            with open(self.log_file, 'a') as f:
-                execute = subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE)
-
-            if not execute.stderr:
-                logger.info('{:10}\n'.format('Complete'))
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+            output, error = proc.communicate()
+            logging.debug(output.decode())
+            logging.error(error.decode())
+            if not error:
+                logging.info('{:10}\n'.format('Complete'))
 
     def update_packages(self):
         """Update to latest version of all packages."""
@@ -159,18 +176,20 @@ class Manage:
             execute = subprocess.run(['pip', 'freeze'], stdout=subprocess.PIPE)
             with open(self.req_txt_path, 'w') as f:
                 f.write(execute.stdout.decode('utf-8'))
-            logger.info(('\nUpdated Requirements file: {}'
-                         '\n').format(self.req_txt_path))
+            logging.info(('\nUpdated Requirements file: {}'
+                          '\n').format(self.req_txt_path))
         except IOError:
-            logger.error('\nFile Not Found: {}\n'
-                         'Requirements File Not Updated'
-                         '\n').format(self.req_txt_path)
+            logging.error('\nFile Not Found: {}\n'
+                          'Requirements File Not Updated'
+                          '\n').format(self.req_txt_path)
 
 
 if __name__ == '__main__':
-    logger = system.logger_setup(log_file='packages.log',
-                                 master_level=logging.DEBUG,
-                                 console_level=logging.DEBUG,
-                                 file_level=logging.WARNING)
+    logging = system.logger_setup(log_file=log_file,
+                                  master_level=master_log,
+                                  console_level=console_log,
+                                  file_level=file_log)
+    logging.info('Checking for package updates')
     p = Manage()
     p.update_packages()
+    logging.info('Package updates complete')
