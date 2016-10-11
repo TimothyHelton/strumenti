@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def axis_title(title, units=None):
+def axis_title(title: str, units: ([str], [None])=None) -> str:
     """Create string for axis title with units italicized.
 
     :param str title: title of axis
@@ -86,7 +86,7 @@ class Derivative:
         save_plot(name=self.plot_name)
 
 
-def save_plot(name=None, **kwargs):
+def save_plot(name: str=None, **kwargs):
     """Save or display a matplotlib figure.
 
     :param str name: name of image file (default: None)
