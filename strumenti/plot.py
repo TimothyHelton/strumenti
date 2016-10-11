@@ -9,12 +9,13 @@ Functions for performing tasks related to matplotlib pyplot library.
 """
 
 import os.path as osp
+from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-def axis_title(title: str, units: ([str], [None])=None) -> str:
+def axis_title(title: str, units: Union[str, None]=None) -> str:
     """Create string for axis title with units italicized.
 
     :param str title: title of axis

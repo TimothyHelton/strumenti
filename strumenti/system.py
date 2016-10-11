@@ -13,6 +13,7 @@ import gzip
 import logging
 import os
 import shutil
+from typing import Union
 
 import chromalog
 import numpy as np
@@ -21,7 +22,7 @@ import wrapt
 from strumenti import notify
 
 
-def check_list(variable: ([str], [tuple], [list])) -> list:
+def check_list(variable: Union[str, tuple, list]) -> list:
     """Convert argument variable into a list.
 
     :param variable: object to convert into a list
@@ -63,7 +64,7 @@ def flatten(matrix: list) -> list:
     return [x for row in matrix for x in row]
 
 
-def logger_setup(log_file: ([None], [str])=None,
+def logger_setup(log_file: Union[None, str]=None,
                  master_level: int=logging.DEBUG,
                  console_level: int=logging.DEBUG,
                  file_level: int=logging.WARNING) -> logging.Logger:
@@ -104,7 +105,7 @@ def logger_setup(log_file: ([None], [str])=None,
 
 
 def load_file(path: str, all_lines: bool=True,
-              first_n_lines: int=0) -> ([str], [list]):
+              first_n_lines: int=0) -> Union[str, list]:
     """Load ascii file into memory.
 
     .. note:: If argument "all_lines" is True then the entire file will be \
@@ -136,9 +137,9 @@ def load_file(path: str, all_lines: bool=True,
             return f.read()
 
 
-def load_records(path: str, header_row: ([int], [None])=None,
+def load_records(path: str, header_row: Union[int, None]=None,
                  skip_rows: int=0, cols: tuple=('all',),
-                 names: ([tuple], [None])=None,
+                 names: Union[tuple, None]=None,
                  formats: tuple=('f8', )) -> np.ndarray:
     """Load ascii file into an array with fields and records.
 

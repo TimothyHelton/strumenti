@@ -8,6 +8,8 @@ Utilities for interfacing with PostgreSQL databases.
 .. moduleauthor:: Timothy Helton <timothy.j.helton@gmail.com>
 """
 
+from typing import Union
+
 import psycopg2
 
 
@@ -26,7 +28,7 @@ def connection(db_name: str, user: str,
 
 
 def table_create(name: str, schema: list, serial: bool=False,
-                 unique: ([list], [None])=None) -> str:
+                 unique: Union[list, None]=None) -> str:
     """Return command to create a table in a PostgreSQL database.
 
     :param str name: name of table
@@ -101,14 +103,14 @@ def table_insert(name: str, field_names: ([str], [list])) -> str:
 
 
 def table_select(table_name: str, return_field: str='*',
-                 search_field: ([str], [None])=None) -> str:
+                 search_field: Union[str, None]=None) -> str:
     """Return values from a Postgres table with a given search value.
 
     :param str table_name: name of table to search
     :param str return_field: field to return from table query (default: * \
         will return all table fields)
-    :param str search_field: field to search for value in table (default: None \
-        will return all table values)
+    :param str search_field: field to search for value in table (default: \
+    None will return all table values)
     :returns: value corresponding to requested field
     :rtype: str
 
