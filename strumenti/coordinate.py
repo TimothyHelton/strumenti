@@ -13,7 +13,7 @@ import numpy as np
 from strumenti import notify
 
 
-def element_dimension(array, values):
+def element_dimension(array: np.ndarray, values: ([int], [list])) -> int:
     """Return the element dimension for array if dimension matches values.
 
     :param ndarray array: numpy array to test
@@ -44,7 +44,7 @@ def element_dimension(array, values):
     return dim
 
 
-def cart2pol(pts, degrees=False):
+def cart2pol(pts: np.ndarray, degrees: bool=False) -> np.ndarray:
     """Convert Cartesian coordinates to polar or cylindrical coordinates.
 
     :param ndarray pts: array of Cartesian points (x, y) or (x, y, z)
@@ -75,7 +75,7 @@ def cart2pol(pts, degrees=False):
         return np.c_[rho, theta, pts[:, 2]]
 
 
-def cart2sphere(pts, degrees=False):
+def cart2sphere(pts: np.ndarray, degrees: bool=False) -> np.ndarray:
     """Convert Cartesian coordinates to spherical coordinates.
 
     :param ndarray pts: array of Cartesian points (x, y, z)
@@ -106,7 +106,7 @@ def cart2sphere(pts, degrees=False):
     return np.c_[r, theta, phi]
 
 
-def pol2cart(pts, degrees=False):
+def pol2cart(pts: np.ndarray, degrees: bool=False) -> np.ndarray:
     """Convert polar or cylindrical coordinates to Cartesian coordinates.
 
     :param ndarray pts: array of polar points (rho, theta) or cylindrical \
@@ -139,7 +139,7 @@ def pol2cart(pts, degrees=False):
         return np.c_[x, y, pts[:, 2]]
 
 
-def sphere2cart(pts, degrees=False):
+def sphere2cart(pts: np.ndarray, degrees: bool=False) -> np.ndarray:
     """Convert spherical coordinates to Cartesian coordinates.
 
     :param ndarray pts: array of spherical coordinates
