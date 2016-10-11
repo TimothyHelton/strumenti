@@ -21,10 +21,11 @@ import wrapt
 from strumenti import notify
 
 
-def check_list(variable):
+def check_list(variable: ([str], [tuple], [list])) -> list:
     """Convert argument variable into a list.
 
     :param variable: object to convert into a list
+    :type: str tuple list
     :returns: list object of argument variable
     :rtype: list
     """
@@ -35,7 +36,7 @@ def check_list(variable):
     return variable
 
 
-def get_header(path, header_row=0):
+def get_header(path: str, header_row: int=0) -> tuple:
     """Extract header from the requested file.
 
     .. note: To select the first row of the file enter header_row=0.
@@ -50,7 +51,7 @@ def get_header(path, header_row=0):
     return head[header_row].split()
 
 
-def flatten(matrix):
+def flatten(matrix: list) -> list:
     """Flatten a matrix (list of lists) into a single list.
 
     :param list matrix: a list of lists to be flattened
@@ -62,17 +63,19 @@ def flatten(matrix):
     return [x for row in matrix for x in row]
 
 
-def logger_setup(log_file=None, master_level=logging.DEBUG,
-                 console_level=logging.DEBUG, file_level=logging.WARNING):
+def logger_setup(log_file: ([None], [str])=None,
+                 master_level: int=logging.DEBUG,
+                 console_level: int=logging.DEBUG,
+                 file_level: int=logging.WARNING) -> logging.Logger:
     """Setup logging.
 
     .. note:: available log levels are DEBUG, INFO, WARNING, ERROR and CRITICAL
 
     :param log_file: name of log file
     :type: None str
-    :param str master_level: desired master log level
-    :param str console_level: desired log level for console
-    :param str file_level: desired log level for file
+    :param int master_level: desired master log level
+    :param int console_level: desired log level for console
+    :param int file_level: desired log level for file
     :returns: logger object
     :rtype: logging.Logger
     """
@@ -100,7 +103,8 @@ def logger_setup(log_file=None, master_level=logging.DEBUG,
     return logger
 
 
-def load_file(path, all_lines=True, first_n_lines=0):
+def load_file(path: str, all_lines: bool=True,
+              first_n_lines: int=0) -> ([str], [list]):
     """Load ascii file into memory.
 
     .. note:: If argument "all_lines" is True then the entire file will be \
@@ -132,8 +136,10 @@ def load_file(path, all_lines=True, first_n_lines=0):
             return f.read()
 
 
-def load_records(path, header_row=None, skip_rows=0, cols=('all',), names=None,
-                 formats=('f8', )):
+def load_records(path: str, header_row: ([int], [None])=None,
+                 skip_rows: int=0, cols: tuple=('all',),
+                 names: ([tuple], [None])=None,
+                 formats: tuple=('f8', )) -> np.ndarray:
     """Load ascii file into an array with fields and records.
 
     .. note:: Counting of the file rows begins with zero (first row = 0).
@@ -169,7 +175,7 @@ def load_records(path, header_row=None, skip_rows=0, cols=('all',), names=None,
                       dtype={'names': header, 'formats': formats})
 
 
-def preserve_cwd(working_dir):
+def preserve_cwd(working_dir: str):
     """Decorator: Return to the current working directory after function call.
 
     :param str working_dir: path to working directory
@@ -204,7 +210,7 @@ def status():
     return wrapper
 
 
-def unzip_file(path):
+def unzip_file(path: str):
     """Decompress read file using gzip.
 
     :param str path: path to file to be unzipped
@@ -215,7 +221,7 @@ def unzip_file(path):
     os.remove(path)
 
 
-def walk_dir(search):
+def walk_dir(search: str) -> list:
     """Walk the dir system looking for files that contain the search string.
 
     .. note:: Search will begin in the current directory.
@@ -233,7 +239,7 @@ def walk_dir(search):
     return sorted(output)
 
 
-def zip_file(path):
+def zip_file(path: str):
     """Compress read file using zip.
 
     :param str path: path to file to be zipped
