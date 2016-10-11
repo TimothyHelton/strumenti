@@ -11,7 +11,8 @@ Utilities for interfacing with PostgreSQL databases.
 import psycopg2
 
 
-def connection(db_name, user, password):
+def connection(db_name: str, user: str,
+               password: str) -> psycopg2.extensions.cursor:
     """Connect to PostgreSQL database and establish a cursor.
 
     :param str db_name: database name
@@ -24,7 +25,8 @@ def connection(db_name, user, password):
     return conn.cursor()
 
 
-def table_create(name, schema, serial=False, unique=None):
+def table_create(name: str, schema: list, serial: bool=False,
+                 unique: ([list], [None])=None) -> str:
     """Return command to create a table in a PostgreSQL database.
 
     :param str name: name of table
@@ -56,7 +58,7 @@ def table_create(name, schema, serial=False, unique=None):
                                                      unique=unique_cmd)
 
 
-def table_drop(name):
+def table_drop(name: str) -> str:
     """Return command to drop a table from a PostgreSQL database.
 
     :param str name: name of table to drop
@@ -66,7 +68,7 @@ def table_drop(name):
     return 'DROP TABLE if EXISTS {name} CASCADE;'.format(name=name)
 
 
-def table_insert(name, field_names):
+def table_insert(name: str, field_names: ([str], [list])) -> str:
     """Return command to add a record into a PostgreSQL database.
 
 
@@ -98,7 +100,8 @@ def table_insert(name, field_names):
                                            values=values)
 
 
-def table_select(table_name, return_field='*', search_field=None):
+def table_select(table_name: str, return_field: str='*',
+                 search_field: ([str], [None])=None) -> str:
     """Return values from a Postgres table with a given search value.
 
     :param str table_name: name of table to search
