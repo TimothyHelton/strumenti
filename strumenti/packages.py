@@ -16,6 +16,7 @@ import subprocess
 import os
 import os.path as osp
 import tarfile
+from typing import Iterable
 
 from strumenti import system
 
@@ -72,10 +73,11 @@ class Manage:
             for name in self.wheels:
                 tar.add(name)
 
-    def create_wheels(self, packages):
+    def create_wheels(self, packages: ([str], [tuple], [list])):
         """Create wheels for packages.
 
-        :param iterable packages: names of packages to upgrade
+        :param packages: names of packages to upgrade
+        :type: str tuple list
         """
         if not self._packages:
             self.list_packages()
@@ -101,7 +103,7 @@ class Manage:
         wheels = glob.glob('{}{}*'.format(self.wheel_path, os.sep))
         self._wheels = [osp.realpath(x) for x in wheels]
 
-    def list_packages(self, outdated=False):
+    def list_packages(self, outdated: bool=False):
         """Get information on installed packages.
 
         :param bool outdated: if True only outdated packages will be retrieved
@@ -124,7 +126,8 @@ class Manage:
         else:
             self._packages = {x[0]: x[1].strip('()') for x in packages}
 
-    def install_packages(self, packages, upgrade=True):
+    @staticmethod
+    def install_packages(packages: Iterable, upgrade: bool=True):
         """Install Python packages.
 
         .. note:: The argument packages can be a list of package names as \
