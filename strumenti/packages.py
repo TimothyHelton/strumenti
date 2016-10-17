@@ -95,7 +95,8 @@ class Manage:
                                     stderr=subprocess.PIPE)
             output, error = proc.communicate()
             logging.debug(output.decode())
-            logging.error(error.decode())
+            if error:
+                logging.error(error.decode())
             logging.info('{:15}{}'.format('Complete:', pkg))
 
     def get_wheels(self):
@@ -158,7 +159,8 @@ class Manage:
                                     stderr=subprocess.PIPE)
             output, error = proc.communicate()
             logging.debug(output.decode())
-            logging.error(error.decode())
+            if error:
+                logging.error(error.decode())
             if not error:
                 logging.info('{:10}\n'.format('Complete'))
 
