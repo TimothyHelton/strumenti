@@ -20,11 +20,15 @@ from typing import Iterable
 
 from strumenti import system
 
-
 log_file = 'packages_{}.log'.format(dt.date(dt.now()))
 master_log = logging.DEBUG
 console_log = logging.INFO
 file_log = logging.DEBUG
+
+logger = system.logger_setup(log_file=log_file,
+                             master_level=master_log,
+                             console_level=console_log,
+                             file_level=file_log)
 
 
 class Manage:
@@ -86,7 +90,7 @@ class Manage:
 
         os.makedirs(self.wheel_path, exist_ok=True)
         for pkg in packages:
-            logging.info('{:15}{}'.format('Create Wheel:', pkg))
+            logger.info('{:15}{}'.format('Create Wheel:', pkg))
             version = self._packages[pkg]
             proc = subprocess.Popen(['pip', 'wheel',
                                      '--wheel-dir={}'.format(self.wheel_path),
@@ -94,10 +98,10 @@ class Manage:
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
             output, error = proc.communicate()
-            logging.debug(output.decode())
+            logger.debug(output.decode())
             if error:
-                logging.error(error.decode())
-            logging.info('{:15}{}'.format('Complete:', pkg))
+                logger.error(error.decode())
+            logger.info('{:15}{}'.format('Complete:', pkg))
 
     def get_wheels(self):
         """Get the absolute path for all wheel files."""
@@ -121,7 +125,7 @@ class Manage:
 
         if outdated:
             if not packages:
-                logging.info('All installed packages are up to date.')
+                logger.info('All installed packages are up to date.')
             else:
                 self._outdated = {x[0]: versions(x[2], x[4]) for x in packages}
         else:
@@ -153,16 +157,16 @@ class Manage:
             if isinstance(pkg, tuple):
                 pkg = '{}=={}'.format(pkg[0], pkg[1])
 
-            logging.info('\n{:10}{}'.format('Install:', pkg))
+            logger.info('\n{:10}{}'.format('Install:', pkg))
             cmd.append(pkg)
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
             output, error = proc.communicate()
-            logging.debug(output.decode())
+            logger.debug(output.decode())
             if error:
-                logging.error(error.decode())
+                logger.error(error.decode())
             if not error:
-                logging.info('{:10}\n'.format('Complete'))
+                logger.info('{:10}\n'.format('Complete'))
 
     def update_packages(self):
         """Update to latest version of all packages."""
@@ -181,20 +185,20 @@ class Manage:
             execute = subprocess.run(['pip', 'freeze'], stdout=subprocess.PIPE)
             with open(self.req_txt_path, 'w') as f:
                 f.write(execute.stdout.decode('utf-8'))
-            logging.info(('\nUpdated Requirements file: {}'
-                          '\n').format(self.req_txt_path))
+            logger.info(('\nUpdated Requirements file: {}'
+                         '\n').format(self.req_txt_path))
         except IOError:
-            logging.error('\nFile Not Found: {}\n'
-                          'Requirements File Not Updated'
-                          '\n').format(self.req_txt_path)
+            logger.error('\nFile Not Found: {}\n'
+                         'Requirements File Not Updated'
+                         '\n').format(self.req_txt_path)
 
 
 if __name__ == '__main__':
-    logging = system.logger_setup(log_file=log_file,
-                                  master_level=master_log,
-                                  console_level=console_log,
-                                  file_level=file_log)
-    logging.info('Checking for package updates')
+    logger = system.logger_setup(log_file=log_file,
+                                 master_level=master_log,
+                                 console_level=console_log,
+                                 file_level=file_log)
+    logger.info('Checking for package updates')
     p = Manage()
     p.update_packages()
-    logging.info('Package updates complete')
+    logger.info('Package updates complete')
