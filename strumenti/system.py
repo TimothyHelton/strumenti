@@ -13,7 +13,7 @@ import gzip
 import logging
 import os
 import shutil
-from typing import Union
+from typing import Any, List, Tuple, Union
 
 import chromalog
 import numpy as np
@@ -22,7 +22,7 @@ import wrapt
 from strumenti import notify
 
 
-def check_list(variable: Union[str, tuple, list]) -> list:
+def check_list(variable: Union[str, Tuple[Any], List[Any]]) -> list:
     """Convert argument variable into a list.
 
     :param variable: object to convert into a list
@@ -52,7 +52,7 @@ def get_header(path: str, header_row: int=0) -> tuple:
     return head[header_row].split()
 
 
-def flatten(matrix: list) -> list:
+def flatten(matrix: List[Any]) -> list:
     """Flatten a matrix (list of lists) into a single list.
 
     :param list matrix: a list of lists to be flattened
@@ -105,7 +105,7 @@ def logger_setup(log_file: Union[None, str]=None,
 
 
 def load_file(path: str, all_lines: bool=True,
-              first_n_lines: int=0) -> Union[str, list]:
+              first_n_lines: int=0) -> Union[str, List[str]]:
     """Load ascii file into memory.
 
     .. note:: If argument "all_lines" is True then the entire file will be \
@@ -138,7 +138,7 @@ def load_file(path: str, all_lines: bool=True,
 
 
 def load_records(path: str, header_row: Union[int, None]=None,
-                 skip_rows: int=0, cols: tuple=('all',),
+                 skip_rows: int=0, cols: Tuple[Union[str, int]]=('all',),
                  names: Union[tuple, None]=None,
                  formats: tuple=('f8', )) -> np.ndarray:
     """Load ascii file into an array with fields and records.
@@ -222,7 +222,7 @@ def unzip_file(path: str):
     os.remove(path)
 
 
-def walk_dir(search: str) -> list:
+def walk_dir(search: str) -> List[str]:
     """Walk the dir system looking for files that contain the search string.
 
     .. note:: Search will begin in the current directory.

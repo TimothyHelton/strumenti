@@ -8,7 +8,7 @@ Utilities for interfacing with PostgreSQL databases.
 .. moduleauthor:: Timothy Helton <timothy.j.helton@gmail.com>
 """
 
-from typing import Union
+from typing import List, Union
 
 import psycopg2
 
@@ -27,8 +27,8 @@ def connection(db_name: str, user: str,
     return conn.cursor()
 
 
-def table_create(name: str, schema: list, serial: bool=False,
-                 unique: Union[list, None]=None) -> str:
+def table_create(name: str, schema: List[str], serial: bool=False,
+                 unique: Union[List[str], None]=None) -> str:
     """Return command to create a table in a PostgreSQL database.
 
     :param str name: name of table
@@ -70,7 +70,7 @@ def table_drop(name: str) -> str:
     return 'DROP TABLE if EXISTS {name} CASCADE;'.format(name=name)
 
 
-def table_insert(name: str, field_names: ([str], [list])) -> str:
+def table_insert(name: str, field_names: Union[str, List[str]]) -> str:
     """Return command to add a record into a PostgreSQL database.
 
 

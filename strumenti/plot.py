@@ -51,7 +51,7 @@ class Derivative:
         - **y**: *ndarray* y-axis data points
         - **y_label**: *str* y-axis label
     """
-    def __init__(self, x_points, y_points):
+    def __init__(self, x_points: np.ndarray, y_points: np.ndarray):
         self.x = x_points
         self.y = y_points
         self.dx = np.gradient(self.x)

@@ -7,13 +7,15 @@
 """
 
 import sys
+from typing import List, Union
 
 import numpy as np
 
 from strumenti import notify
 
 
-def element_dimension(array: np.ndarray, values: ([int], [list])) -> int:
+def element_dimension(array: np.ndarray,
+                      values: Union[int, List[int]]) -> int:
     """Return the element dimension for array if dimension matches values.
 
     :param ndarray array: numpy array to test
