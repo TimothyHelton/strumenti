@@ -25,7 +25,8 @@ master_log = logging.DEBUG
 console_log = logging.INFO
 file_log = logging.DEBUG
 
-logger = system.logger_setup(log_file=log_file,
+logger = system.logger_setup(log=logging.getLogger(__name__),
+                             log_file=log_file,
                              master_level=master_log,
                              console_level=console_log,
                              file_level=file_log)
@@ -194,7 +195,8 @@ class Manage:
 
 
 if __name__ == '__main__':
-    logger = system.logger_setup(log_file=log_file,
+    logger = system.logger_setup(log=logging.getLogger(__name__),
+                                 log_file=log_file,
                                  master_level=master_log,
                                  console_level=console_log,
                                  file_level=file_log)

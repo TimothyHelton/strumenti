@@ -64,7 +64,8 @@ def flatten(matrix: List[Any]) -> list:
     return [x for row in matrix for x in row]
 
 
-def logger_setup(log_file: Union[None, str]=None,
+def logger_setup(log: Union[object, None]=None,
+                 log_file: Union[None, str]=None,
                  master_level: int=logging.DEBUG,
                  console_level: int=logging.DEBUG,
                  file_level: int=logging.WARNING) -> logging.Logger:
@@ -72,6 +73,7 @@ def logger_setup(log_file: Union[None, str]=None,
 
     .. note:: available log levels are DEBUG, INFO, WARNING, ERROR and CRITICAL
 
+    :param logging.Logger log: logging object
     :param log_file: name of log file
     :type: None str
     :param int master_level: desired master log level
@@ -80,28 +82,30 @@ def logger_setup(log_file: Union[None, str]=None,
     :returns: logger object
     :rtype: logging.Logger
     """
+    if log is None:
+        log = logging.getLogger(__name__)
+
+    log.setLevel(master_level)
     date_format = '%m/%d/%Y %I:%M:%S'
-    log_format = '%(asctime)s  %(levelname)8s  -> %(name)s <-  %(message)s\n'
+    log_format = ('%(asctime)s  %(levelname)8s  -> %(name)s <- '
+                  '(line: %(lineno)d) %(message)s\n')
     color_formatter = chromalog.log.ColorizingFormatter(fmt=log_format,
                                                         datefmt=date_format)
     formatter = logging.Formatter(fmt=log_format, datefmt=date_format)
 
-    logger = logging.getLogger(__name__)
-    logger.setLevel(master_level)
-
-    if not logger.handlers:
+    if not log.handlers:
         console_handler = chromalog.log.ColorizingStreamHandler()
         console_handler.setLevel(console_level)
         console_handler.setFormatter(color_formatter)
-        logger.addHandler(console_handler)
+        log.addHandler(console_handler)
 
         if log_file:
             file_handler = logging.FileHandler(filename=log_file)
             file_handler.setLevel(file_level)
             file_handler.setFormatter(formatter)
-            logger.addHandler(file_handler)
+            log.addHandler(file_handler)
 
-    return logger
+    return log
 
 
 def load_file(path: str, all_lines: bool=True,
