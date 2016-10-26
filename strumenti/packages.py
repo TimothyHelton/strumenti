@@ -21,15 +21,7 @@ from typing import Iterable
 from strumenti import system
 
 log_file = 'packages_{}.log'.format(dt.date(dt.now()))
-master_log = logging.DEBUG
-console_log = logging.INFO
-file_log = logging.DEBUG
-
-logger = system.logger_setup(log=logging.getLogger(__name__),
-                             log_file=log_file,
-                             master_level=master_log,
-                             console_level=console_log,
-                             file_level=file_log)
+logger = system.logger_setup(name=__name__, log_file=log_file)
 
 
 class Manage:
@@ -195,11 +187,7 @@ class Manage:
 
 
 if __name__ == '__main__':
-    logger = system.logger_setup(log=logging.getLogger(__name__),
-                                 log_file=log_file,
-                                 master_level=master_log,
-                                 console_level=console_log,
-                                 file_level=file_log)
+    logger = system.logger_setup(name=__name__, log_file=log_file)
     logger.info('Checking for package updates')
     p = Manage()
     p.update_packages()

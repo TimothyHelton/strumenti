@@ -64,7 +64,7 @@ def flatten(matrix: List[Any]) -> list:
     return [x for row in matrix for x in row]
 
 
-def logger_setup(log: Union[object, None]=None,
+def logger_setup(name: Union[str, None]=None,
                  log_file: Union[None, str]=None,
                  master_level: int=logging.DEBUG,
                  console_level: int=logging.DEBUG,
@@ -73,7 +73,7 @@ def logger_setup(log: Union[object, None]=None,
 
     .. note:: available log levels are DEBUG, INFO, WARNING, ERROR and CRITICAL
 
-    :param logging.Logger log: logging object
+    :param str name: name of the logger
     :param log_file: name of log file
     :type: None str
     :param int master_level: desired master log level
@@ -81,17 +81,28 @@ def logger_setup(log: Union[object, None]=None,
     :param int file_level: desired log level for file
     :returns: logger object
     :rtype: logging.Logger
-    """
-    if log is None:
-        log = logging.getLogger(__name__)
 
-    log.setLevel(master_level)
+    **Example**:
+
+        * Create module level logger. Make sure to use __name__ for the name \
+            argument.
+
+    ::
+
+        from strumenti import system
+
+        logger = system.logger_setup(name=__name__)
+
+    """
     date_format = '%m/%d/%Y %I:%M:%S'
     log_format = ('%(asctime)s  %(levelname)8s  -> %(name)s <- '
                   '(line: %(lineno)d) %(message)s\n')
     color_formatter = chromalog.log.ColorizingFormatter(fmt=log_format,
                                                         datefmt=date_format)
     formatter = logging.Formatter(fmt=log_format, datefmt=date_format)
+
+    log = logging.getLogger(name)
+    log.setLevel(master_level)
 
     if not log.handlers:
         console_handler = chromalog.log.ColorizingStreamHandler()
