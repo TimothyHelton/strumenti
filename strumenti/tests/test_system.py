@@ -8,12 +8,17 @@
 
 from contextlib import redirect_stdout
 import io
+import logging
 import os
 import os.path as osp
-import pytest
 import shutil
 import subprocess
+
+from chromalog.mark.objects import Mark
+import pytest
 import numpy as np
+import testfixtures as tf
+
 from strumenti import system
 
 
@@ -84,6 +89,25 @@ def test__flatten(matrix, expected):
 def test__flatten_empty():
     with pytest.raises(TypeError):
         system.flatten()
+
+
+# Test logger_setup
+def test__logger_setup(tmpdir):
+    tmpdir.chdir()
+    with tf.LogCapture() as l:
+        logger = system.logger_setup(name='test')
+        logger.debug('debug')
+        logger.info('info')
+        logger.warning('warning')
+        logger.error('error')
+        logger.critical('critical')
+    l.check = (
+        (Mark('test', ['important']), Mark('DEBUG', ['debug']), 'debug'),
+        (Mark('test', ['important']), Mark('INFO', ['info']), 'info'),
+        (Mark('test', ['important']), Mark('WARNING', ['warning']), 'warning'),
+        (Mark('test', ['important']), Mark('ERROR', ['error']), 'error'),
+        (Mark('test', ['important']), Mark('CRITICAL', ['critical']),
+         'critical'))
 
 
 # Test load_file
