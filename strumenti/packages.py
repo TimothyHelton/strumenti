@@ -11,7 +11,6 @@ Utilities for managing Python packages.
 from collections import namedtuple
 from datetime import datetime as dt
 import glob
-import logging
 import subprocess
 import os
 import os.path as osp
@@ -20,8 +19,7 @@ from typing import Iterable
 
 from strumenti import system
 
-log_file = 'packages_{}.log'.format(dt.date(dt.now()))
-logger = system.logger_setup(name=__name__, log_file=log_file)
+logger = system.logger_setup(name=__name__)
 
 
 class Manage:
@@ -29,7 +27,6 @@ class Manage:
 
     :Attributes:
 
-        - **log_file**: *str* name of log file
         - **outdated**: *dict* outdated packages
         - **packages**: *dict* all packages
         - **req_txt_path**: *str* path to the file containing all package \
@@ -38,8 +35,7 @@ class Manage:
             packages (this includes all dependencies)
         - **wheel_path**: *str* path to the temporary wheelhouse directory
     """
-    def __init__(self, logging_file=log_file):
-        self.log_file = logging_file
+    def __init__(self):
         self._outdated = {}
         self._packages = {}
         self.req_txt_path = 'requirements.txt'
@@ -187,6 +183,7 @@ class Manage:
 
 
 if __name__ == '__main__':
+    log_file = 'packages_{}.log'.format(dt.date(dt.now()))
     logger = system.logger_setup(name=__name__, log_file=log_file)
     logger.info('Checking for package updates')
     p = Manage()
