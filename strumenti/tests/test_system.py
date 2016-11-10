@@ -115,7 +115,7 @@ logger_setup = {'debug': ({'name': 'test', 'master_level': logging.DEBUG},
 @pytest.mark.parametrize('kwargs, expected',
                          list(logger_setup.values()),
                          ids=list(logger_setup.keys()))
-def test__logger_setup(capsys, patch_logger, tmpdir, kwargs, expected):
+def test__logger_setup(patch_logger, tmpdir, kwargs, expected):
     tmpdir.chdir()
     with tf.LogCapture() as l:
         logger = system.logger_setup(**kwargs)
