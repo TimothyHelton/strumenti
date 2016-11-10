@@ -5,10 +5,11 @@
 ..moduleauthor:: Timothy Helton <timothy.j.helton@gmail.com>
 """
 
-import os
 import os.path as osp
+
 import pytest
 import matplotlib.pyplot as plt
+
 from strumenti import plot
 
 

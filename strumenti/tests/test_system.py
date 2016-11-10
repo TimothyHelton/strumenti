@@ -6,19 +6,17 @@
 ..moduleauthor:: Timothy Helton <timothy.j.helton@gmail.com>
 """
 
-from contextlib import redirect_stdout
-import io
 import logging
 import os
 import os.path as osp
 import shutil
 import subprocess
 
-from chromalog.mark.objects import Mark
 import pytest
 import numpy as np
 import testfixtures as tf
 
+from strumenti.tests.fixtures import patch_logger
 from strumenti import system
 
 
@@ -92,22 +90,44 @@ def test__flatten_empty():
 
 
 # Test logger_setup
-def test__logger_setup(tmpdir):
+output = (('test', 'DEBUG', 'debug'),
+          ('test', 'INFO', 'info'),
+          ('test', 'WARNING', 'warning'),
+          ('test', 'ERROR', 'error'),
+          ('test', 'CRITICAL', 'critical'))
+logger_setup = {'debug': ({'name': 'test', 'master_level': logging.DEBUG},
+                          output),
+                'info': ({'name': 'test', 'master_level': logging.INFO},
+                         output[1:]),
+                'warning': ({'name': 'test', 'master_level': logging.WARNING},
+                            output[2:]),
+                'error': ({'name': 'test', 'master_level': logging.ERROR},
+                          output[3:]),
+                'critical': ({'name': 'test',
+                              'master_level': logging.CRITICAL},
+                             output[-1:]),
+                'file': ({'log_file': 'test.log', 'name': 'test_file',
+                          'master_level': logging.CRITICAL},
+                         (('test_file', 'CRITICAL', 'critical'),))
+                }
+
+
+@pytest.mark.parametrize('kwargs, expected',
+                         list(logger_setup.values()),
+                         ids=list(logger_setup.keys()))
+def test__logger_setup(capsys, patch_logger, tmpdir, kwargs, expected):
     tmpdir.chdir()
     with tf.LogCapture() as l:
-        logger = system.logger_setup(name='test')
+        logger = system.logger_setup(**kwargs)
         logger.debug('debug')
         logger.info('info')
         logger.warning('warning')
         logger.error('error')
         logger.critical('critical')
-    l.check = (
-        (Mark('test', ['important']), Mark('DEBUG', ['debug']), 'debug'),
-        (Mark('test', ['important']), Mark('INFO', ['info']), 'info'),
-        (Mark('test', ['important']), Mark('WARNING', ['warning']), 'warning'),
-        (Mark('test', ['important']), Mark('ERROR', ['error']), 'error'),
-        (Mark('test', ['important']), Mark('CRITICAL', ['critical']),
-         'critical'))
+    l.check(*expected)
+
+    if 'log_file' in kwargs.keys():
+        assert osp.isfile('test.log')
 
 
 # Test load_file
@@ -215,19 +235,16 @@ def test__preserve_cwd(preserve_cwd_setup):
 
 
 # Test status
-def test__status():
+def test__status(capsys):
 
     @system.status()
     def print_num():
         print('1, 2, 3')
 
-    f = io.StringIO()
-    with redirect_stdout(f):
-        print_num()
-
-    assert (f.getvalue().split()[:-1] ==
-            ['Execute:', 'print_num', '1,', '2,', '3', 'Completed:',
-             'print_num', '(runtime:'])
+    print_num()
+    out, err = capsys.readouterr()
+    assert out.split()[:-1] == ['Execute:', 'print_num', '1,', '2,', '3',
+                                'Completed:', 'print_num', '(runtime:']
 
 
 # Test unzip

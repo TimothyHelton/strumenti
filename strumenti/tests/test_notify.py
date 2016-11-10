@@ -7,6 +7,7 @@
 """
 
 import pytest
+
 from strumenti import notify
 
 # Test astrix_line

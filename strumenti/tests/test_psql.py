@@ -7,6 +7,7 @@
 """
 
 import pytest
+
 from strumenti import psql
 
 
