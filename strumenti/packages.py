@@ -118,7 +118,7 @@ class Manage:
             else:
                 self._outdated = {x[0]: versions(x[2], x[4]) for x in packages}
         else:
-            self._packages = {x[0]: x[1].strip('()') for x in packages}
+            self._packages = {x[0]: x[1] for x in packages}
 
     @staticmethod
     def install_packages(packages: Iterable, upgrade: bool=True):

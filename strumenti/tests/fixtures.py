@@ -6,21 +6,28 @@
 .. moduleauthor:: Timothy Helton <timothy.j.helton@gmail.com>
 """
 
-import logging
-
-import chromalog
-import pytest
+from chromalog.mark.objects import Mark
+import testfixtures as tf
 
 
-@pytest.fixture()
-def patch_logger(monkeypatch):
-    def mock_colorizing_formatter(*args, **kwargs):
-        return logging.Formatter()
+class ChromalogLogCapture(tf.LogCapture):
+    """Class will remove color markings from chromalog logger entries.
 
-    def mock_colorizing_stream_handler(*args, **kwargs):
-        return logging.StreamHandler()
+    ..info:: The Chromalog package facilitates colored logging to the \
+        screen and removes the color tags when printed to a file. \
+        During unit testing the color tags are captured from stderror, which
+        complicates verify logging statements. \
+        This class provides an additional method to the base class \
+        testfixtures.LogCapture, which extracts the string from the \
+        chromalog object for the logger name and level.
+    """
+    def __init__(self):
+        super().__init__()
 
-    monkeypatch.setattr(chromalog.log, 'ColorizingFormatter',
-                        mock_colorizing_formatter)
-    monkeypatch.setattr(chromalog.log, 'ColorizingStreamHandler',
-                        mock_colorizing_stream_handler)
+    def filter_records(self):
+        """Remove chromalog color markings from LogCapture attributes."""
+        for (idx, record) in enumerate(self.records):
+            if isinstance(record.name, Mark):
+                self.records[idx].name = record.name.obj
+            if isinstance(record.levelname, Mark):
+                self.records[idx].levelname = record.levelname.obj
