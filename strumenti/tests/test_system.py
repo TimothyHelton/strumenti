@@ -14,9 +14,9 @@ import subprocess
 
 import pytest
 import numpy as np
-import testfixtures as tf
 
-from strumenti.tests.fixtures import patch_logger
+from strumenti.tests.fixtures import \
+    ChromalogLogCapture
 from strumenti import system
 
 
@@ -115,16 +115,17 @@ logger_setup = {'debug': ({'name': 'test', 'master_level': logging.DEBUG},
 @pytest.mark.parametrize('kwargs, expected',
                          list(logger_setup.values()),
                          ids=list(logger_setup.keys()))
-def test__logger_setup(capsys, patch_logger, tmpdir, kwargs, expected):
+def test__logger_setup(tmpdir, kwargs, expected):
     tmpdir.chdir()
-    with tf.LogCapture() as l:
+    with ChromalogLogCapture() as log_cap:
         logger = system.logger_setup(**kwargs)
         logger.debug('debug')
         logger.info('info')
         logger.warning('warning')
         logger.error('error')
         logger.critical('critical')
-    l.check(*expected)
+    log_cap.filter_records()
+    log_cap.check(*expected)
 
     if 'log_file' in kwargs.keys():
         assert osp.isfile('test.log')

@@ -202,7 +202,7 @@ def preserve_cwd(working_dir: str):
         os.chdir(working_dir)
 
         try:
-            return wrapped(*args, *kwargs)
+            return wrapped(*args, **kwargs)
         finally:
             os.chdir(original_dir)
 

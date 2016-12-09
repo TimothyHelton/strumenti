@@ -13,7 +13,7 @@ with open(osp.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
         name='strumenti',
-        version='1.0.0',
+        version='1.0.1',
         description='Common tools universally applicable to Python 3 packages.',
         author='Timothy Helton',
         author_email='timothy.j.helton@gmail.com',
