@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 import strumenti
 
 
-with open('requests/__init__.py', 'r') as fd:
+with open('strumenti/__init__.py', 'r') as fd:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                         fd.read(), re.MULTILINE).group(1)
 
