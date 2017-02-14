@@ -3,9 +3,16 @@
 
 from codecs import open
 import os.path as osp
+import re
+
 from setuptools import setup, find_packages
+
 import strumenti
 
+
+with open('requests/__init__.py', 'r') as fd:
+    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+                        fd.read(), re.MULTILINE).group(1)
 
 here = osp.abspath(osp.dirname(__file__))
 with open(osp.join(here, 'README.md'), encoding='utf-8') as f:
@@ -13,7 +20,7 @@ with open(osp.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='strumenti',
-    version='1.0.1',
+    version=version,
     description='Common tools universally applicable to Python 3 packages.',
     author='Timothy Helton',
     author_email='timothy.j.helton@gmail.com',
@@ -26,6 +33,7 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Software Development :: Build Tools',
         ],
     keywords='common tools utility',
@@ -34,7 +42,6 @@ setup(
         'chromalog',
         'matplotlib',
         'numpy',
-        'Pint',
         'psycopg2',
         'pip',
         'pytest',

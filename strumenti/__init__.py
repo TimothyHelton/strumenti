@@ -12,6 +12,8 @@ from . import psql
 from . import system
 
 
+__version__ = '1.0.2'
+
 try:
     _dist = get_distribution('strumenti')
     dist_loc = osp.normcase(_dist.location)
